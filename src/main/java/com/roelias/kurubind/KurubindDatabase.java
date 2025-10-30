@@ -164,6 +164,10 @@ public class KurubindDatabase {
         jdbiProvider.getJdbi().useHandle(handleConsumer::accept);
     }
 
+    public Jdbi getJdbi(){
+            return jdbiProvider.getJdbi();
+    }
+
     // ========== Value Generation ==========
 
     private <T> void generateValues(T entity, EntityMetadata metadata, boolean isInsert, boolean isUpdate) {
