@@ -53,4 +53,15 @@ public class GenericSQLGenerator implements SQLGenerator {
     public String getPlaceholder(FieldMetadata field) {
         return ":" + field.getColumnName();
     }
+
+    @Override
+    public String generateSelectById(EntityMetadata meta) {
+        return "SELECT * FROM " + meta.getFullTableName() +
+                " WHERE " + meta.getIdField().getColumnName() + " = :id";
+    }
+
+    @Override
+    public String generateCount(EntityMetadata meta) {
+        return "SELECT COUNT(*) FROM " + meta.getFullTableName();
+    }
 }

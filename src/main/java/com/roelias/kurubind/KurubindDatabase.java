@@ -14,10 +14,12 @@ import com.roelias.kurubind.registry.ValidatorRegistry;
 import com.roelias.kurubind.registry.ValueGeneratorRegistry;
 import org.jdbi.v3.core.Handle;
 import org.jdbi.v3.core.Jdbi;
+import org.jdbi.v3.core.mapper.RowMapper;
 import org.jdbi.v3.core.statement.Update;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -65,6 +67,8 @@ public class KurubindDatabase {
             }
         });
     }
+
+
 
     public <T> void insertAll(List<T> entities) {
         for (T entity : entities) {
@@ -146,6 +150,47 @@ public class KurubindDatabase {
         return query(sql, entityClass);
     }
 
+    public <T> Optional<T> queryById(Class<T> entityClass, Object id){
+        EntityMetadata metadata = new EntityMetadata(entityClass);
+
+        if (metadata.isQueryResponse()) {
+            throw new IllegalArgumentException("Cannot queryById @QueryResponse entities. Use query() instead.");
+        }
+
+        if (!metadata.hasIdField()) {
+            throw new IllegalArgumentException("Entity must have @Id field for queryById");
+        }
+
+        SQLGenerator generator = sqlGeneratorRegistry.getGenerator(dialect);
+        String sql = generator.generateSelectById(metadata);
+
+        KurubindRowMapper<T> mapper = new KurubindRowMapper<>(
+                entityClass, handlerRegistry, dialect
+        );
+
+        return jdbiProvider.getJdbi().withHandle(handle ->
+                handle.createQuery(sql)
+                        .bind("id", id)
+                        .map(mapper).findOne()
+        );
+    }
+
+    public Long count(Class<?> entityClass){
+        EntityMetadata metadata = new EntityMetadata(entityClass);
+
+        if (metadata.isQueryResponse()) {
+            throw new IllegalArgumentException("Cannot count @QueryResponse entities.");
+        }
+
+        SQLGenerator generator = sqlGeneratorRegistry.getGenerator(dialect);
+        String sql = generator.generateCount(metadata);
+
+        return jdbiProvider.getJdbi().withHandle(handle ->
+                handle.createQuery(sql)
+                        .mapTo(Long.class)
+                        .one()
+        );
+    }
     public <T> List<T> query(String sql, Class<T> resultClass) {
         KurubindRowMapper<T> mapper = new KurubindRowMapper<>(
                 resultClass, handlerRegistry, dialect
@@ -161,11 +206,26 @@ public class KurubindDatabase {
     public void execute(Consumer<Handle> handleConsumer) {
         // Note: The Consumer cannot throw checked exceptions itself.
         // Any checked exceptions from JDBI will be wrapped in runtime exceptions.
-        jdbiProvider.getJdbi().useHandle(handleConsumer::accept);
+        jdbiProvider.getJdbi().useTransaction(handleConsumer::accept);
     }
 
     public Jdbi getJdbi(){
             return jdbiProvider.getJdbi();
+    }
+
+    /**
+     * Obtiene un RowMapper para el tipo de resultado especificado
+     * @param resultClass Clase del resultado
+     * @return RowMapper para mapear filas a instancias de resultClass
+     * @param <T> Tipo del resultado
+     */
+    public <T> RowMapper<T> getRowMapper(Class<T> resultClass){
+        return (resultSet, ctx) -> {
+            KurubindRowMapper<T> mapper = new KurubindRowMapper<>(
+                    resultClass, handlerRegistry, dialect
+            );
+            return mapper.map(resultSet, ctx);
+        };
     }
 
     // ========== Value Generation ==========

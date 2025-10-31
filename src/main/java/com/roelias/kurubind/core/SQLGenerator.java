@@ -12,5 +12,7 @@ public interface SQLGenerator {
     String generateDelete(EntityMetadata meta);
     String generateSelect(EntityMetadata meta);
     String getPlaceholder(FieldMetadata field);
+    String generateSelectById(EntityMetadata meta);
+    String generateCount(EntityMetadata meta);
 
 }
