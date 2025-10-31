@@ -3,7 +3,9 @@ package com.roelias.kurubind.metadata;
 import com.roelias.kurubind.annotations.*;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.RecordComponent;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
