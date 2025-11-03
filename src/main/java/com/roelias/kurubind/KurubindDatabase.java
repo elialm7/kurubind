@@ -536,21 +536,34 @@ public class KurubindDatabase {
         SQLGenerator generator = sqlGeneratorRegistry.getGenerator(dialect);
         String sql = generator.generateSelect(metadata);
 
-        return queryPage(sql, entityClass, page, pageSize);
+        return queryPage(sql, entityClass, Collections.emptyMap(), page, pageSize);
     }
 
     public <T> PageResult<T> queryPage(String sql, Class<T> resultClass, int page, int pageSize) {
-        long total = queryForLong("SELECT COUNT(*) FROM (" + sql + ") AS count_query");
+        return queryPage(sql, resultClass, Collections.emptyMap(), page, pageSize);
+    }
 
-        String pagedSql = sql + " LIMIT :limit OFFSET :offset";
+    public <T> PageResult<T> queryPage(String sql, Class<T> resultClass, Map<String, Object> params, int page, int pageSize) {
+        // Count total results with same parameters
+        String countSql = "SELECT COUNT(*) FROM (" + sql + ") AS count_query";
+        long total = queryForLong(countSql, params);
 
-        Map<String, Object> params = new HashMap<>();
-        params.put("limit", pageSize);
-        params.put("offset", (page - 1) * pageSize);
+        // Build paginated query with dialect-specific syntax
+        String pagedSql = buildPaginatedQuery(sql, page, pageSize);
 
-        List<T> results = query(pagedSql, resultClass, params);
+        // Create parameters map with pagination params
+        Map<String, Object> allParams = new HashMap<>(params);
+        allParams.put("limit", pageSize);
+        allParams.put("offset", (page - 1) * pageSize);
+
+        List<T> results = query(pagedSql, resultClass, allParams);
 
         return new PageResult<>(results, page, pageSize, total);
+    }
+
+    private String buildPaginatedQuery(String sql, int page, int pageSize) {
+        // All three databases (MySQL, PostgreSQL, SQLite) support LIMIT/OFFSET
+        return sql + " LIMIT :limit OFFSET :offset";
     }
 
     // ========== Value Generation ==========
@@ -683,6 +696,17 @@ public class KurubindDatabase {
         public long getTotalPages() { return totalPages; }
         public boolean hasNext() { return page < totalPages; }
         public boolean hasPrevious() { return page > 1; }
+
+        @Override
+        public String toString() {
+            return "PageResult{" +
+                    "results=" + results +
+                    ", page=" + page +
+                    ", pageSize=" + pageSize +
+                    ", totalElements=" + totalElements +
+                    ", totalPages=" + totalPages +
+                    '}';
+        }
     }
 
     // ========== Builder ==========

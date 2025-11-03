@@ -34,9 +34,9 @@ System.out.println("Created user ID: " + user.getId());
 ### Insert Multiple Entities
 ```java
 List<User> users = Arrays.asList(
-    new User("Alice", "alice@example.com"),
-    new User("Bob", "bob@example.com"),
-    new User("Carol", "carol@example.com")
+        new User("Alice", "alice@example.com"),
+        new User("Bob", "bob@example.com"),
+        new User("Carol", "carol@example.com")
 );
 db.insertAll(users);
 // All entities validated first, then inserted in a single transaction
@@ -80,7 +80,7 @@ Long totalUsers = db.count(User.class);
 ```java
 List<User> users = db.list(User.class);
 users.forEach(u -> u.setStatus("active"));
-db.updateAll(users);
+        db.updateAll(users);
 ```
 
 ### Delete By ID
@@ -97,8 +97,8 @@ db.deleteByIds(User.class, List.of(1, 2, 3, 4, 5));
 ### Delete Multiple Entities
 ```java
 List<User> usersToDelete = db.query(
-    "SELECT * FROM users WHERE status = 'inactive'",
-    User.class
+        "SELECT * FROM users WHERE status = 'inactive'",
+        User.class
 );
 db.deleteAll(usersToDelete);
 ```
@@ -107,7 +107,7 @@ db.deleteAll(usersToDelete);
 ```java
 boolean exists = db.exists(User.class, 123);
 if (exists) {
-    System.out.println("User exists!");
+        System.out.println("User exists!");
 }
 ```
 
@@ -129,32 +129,32 @@ Optional<User> firstUser = db.queryFirst(User.class);
 ### Query with Custom SQL
 ```java
 List<User> activeUsers = db.query(
-    "SELECT * FROM users WHERE status = 'active'",
-    User.class
+        "SELECT * FROM users WHERE status = 'active'",
+        User.class
 );
 ```
 
 ### Query One Result
 ```java
 Optional<User> user = db.queryOne(
-    "SELECT * FROM users WHERE email = 'john@example.com'",
-    User.class
+        "SELECT * FROM users WHERE email = 'john@example.com'",
+        User.class
 );
 ```
 
 ### Query with ORDER BY
 ```java
 List<User> orderedUsers = db.query(
-    "SELECT * FROM users ORDER BY created_at DESC",
-    User.class
+        "SELECT * FROM users ORDER BY created_at DESC",
+        User.class
 );
 ```
 
 ### Query with LIMIT
 ```java
 List<User> topUsers = db.query(
-    "SELECT * FROM users ORDER BY score DESC LIMIT 10",
-    User.class
+        "SELECT * FROM users ORDER BY score DESC LIMIT 10",
+        User.class
 );
 ```
 
@@ -165,45 +165,45 @@ List<User> topUsers = db.query(
 ### Query with Parameters (Safe from SQL Injection)
 ```java
 List<User> activeUsers = db.query(
-    "SELECT * FROM users WHERE status = :status AND age > :minAge",
-    User.class,
-    Map.of("status", "active", "minAge", 18)
+        "SELECT * FROM users WHERE status = :status AND age > :minAge",
+        User.class,
+        Map.of("status", "active", "minAge", 18)
 );
 ```
 
 ### Query One with Parameters
 ```java
 Optional<User> user = db.queryOne(
-    "SELECT * FROM users WHERE email = :email",
-    User.class,
-    Map.of("email", "john@example.com")
+        "SELECT * FROM users WHERE email = :email",
+        User.class,
+        Map.of("email", "john@example.com")
 );
 ```
 
 ### Complex WHERE Clause
 ```java
 List<User> users = db.query(
-    "SELECT * FROM users " +
-    "WHERE status = :status " +
-    "AND created_at >= :startDate " +
-    "AND created_at <= :endDate " +
-    "AND country IN (:countries)",
-    User.class,
-    Map.of(
-        "status", "active",
-        "startDate", LocalDateTime.now().minusDays(30),
-        "endDate", LocalDateTime.now(),
-        "countries", List.of("US", "CA", "MX")
-    )
+        "SELECT * FROM users " +
+                "WHERE status = :status " +
+                "AND created_at >= :startDate " +
+                "AND created_at <= :endDate " +
+                "AND country IN (:countries)",
+        User.class,
+        Map.of(
+                "status", "active",
+                "startDate", LocalDateTime.now().minusDays(30),
+                "endDate", LocalDateTime.now(),
+                "countries", List.of("US", "CA", "MX")
+        )
 );
 ```
 
 ### Query with LIKE
 ```java
 List<User> users = db.query(
-    "SELECT * FROM users WHERE name LIKE :pattern",
-    User.class,
-    Map.of("pattern", "%john%")
+        "SELECT * FROM users WHERE name LIKE :pattern",
+        User.class,
+        Map.of("pattern", "%john%")
 );
 ```
 
@@ -217,8 +217,8 @@ Long totalUsers = db.queryForLong("SELECT COUNT(*) FROM users");
 
 // With parameters
 Long activeCount = db.queryForLong(
-    "SELECT COUNT(*) FROM users WHERE status = :status",
-    Map.of("status", "active")
+        "SELECT COUNT(*) FROM users WHERE status = :status",
+        Map.of("status", "active")
 );
 ```
 
@@ -227,40 +227,40 @@ Long activeCount = db.queryForLong(
 Integer avgAge = db.queryForInt("SELECT AVG(age) FROM users");
 
 Integer totalOrders = db.queryForInt(
-    "SELECT SUM(quantity) FROM orders WHERE user_id = :userId",
-    Map.of("userId", 123)
+        "SELECT SUM(quantity) FROM orders WHERE user_id = :userId",
+        Map.of("userId", 123)
 );
 ```
 
 ### String Queries
 ```java
 String userName = db.queryForString(
-    "SELECT name FROM users WHERE id = :id",
-    Map.of("id", 123)
+        "SELECT name FROM users WHERE id = :id",
+        Map.of("id", 123)
 );
 ```
 
 ### Generic Object Queries
 ```java
 Optional<Double> maxSalary = db.queryForObject(
-    "SELECT MAX(salary) FROM employees WHERE department = :dept",
-    Double.class,
-    Map.of("dept", "Engineering")
+        "SELECT MAX(salary) FROM employees WHERE department = :dept",
+        Double.class,
+        Map.of("dept", "Engineering")
 );
 ```
 
 ### List of Scalars
 ```java
 List<String> emails = db.queryForList(
-    "SELECT email FROM users WHERE status = :status",
-    String.class,
-    Map.of("status", "active")
+        "SELECT email FROM users WHERE status = :status",
+        String.class,
+        Map.of("status", "active")
 );
 
 List<Integer> userIds = db.queryForList(
-    "SELECT id FROM users WHERE age > :age",
-    Integer.class,
-    Map.of("age", 18)
+        "SELECT id FROM users WHERE age > :age",
+        Integer.class,
+        Map.of("age", 18)
 );
 ```
 
@@ -274,54 +274,54 @@ List<Integer> userIds = db.queryForList(
 ```java
 // No DTO class needed!
 List<Map<String, Object>> results = db.queryForMaps(
-    "SELECT department, COUNT(*) as count, AVG(salary) as avg_salary " +
-    "FROM employees GROUP BY department"
-);
+                "SELECT department, COUNT(*) as count, AVG(salary) as avg_salary " +
+                        "FROM employees GROUP BY department"
+        );
 
 for (Map<String, Object> row : results) {
-    System.out.println(row.get("department") + ": " + row.get("count"));
-}
+        System.out.println(row.get("department") + ": " + row.get("count"));
+        }
 ```
 
 ### Query as Single Map
 ```java
 Optional<Map<String, Object>> stats = db.queryForMap(
-    "SELECT COUNT(*) as total, AVG(age) as avg_age FROM users"
+        "SELECT COUNT(*) as total, AVG(age) as avg_age FROM users"
 );
 
 stats.ifPresent(s -> {
-    System.out.println("Total: " + s.get("total"));
-    System.out.println("Average age: " + s.get("avg_age"));
-});
+        System.out.println("Total: " + s.get("total"));
+        System.out.println("Average age: " + s.get("avg_age"));
+        });
 ```
 
 ### Complex JOIN as Maps
 ```java
 List<Map<String, Object>> orderSummary = db.queryForMaps(
-    "SELECT u.name, u.email, COUNT(o.id) as order_count, " +
-    "       SUM(o.total) as total_spent " +
-    "FROM users u " +
-    "LEFT JOIN orders o ON u.id = o.user_id " +
-    "WHERE o.created_at >= :startDate " +
-    "GROUP BY u.id " +
-    "HAVING COUNT(o.id) > :minOrders " +
-    "ORDER BY total_spent DESC",
-    Map.of(
-        "startDate", LocalDateTime.now().minusMonths(1),
-        "minOrders", 5
-    )
+        "SELECT u.name, u.email, COUNT(o.id) as order_count, " +
+                "       SUM(o.total) as total_spent " +
+                "FROM users u " +
+                "LEFT JOIN orders o ON u.id = o.user_id " +
+                "WHERE o.created_at >= :startDate " +
+                "GROUP BY u.id " +
+                "HAVING COUNT(o.id) > :minOrders " +
+                "ORDER BY total_spent DESC",
+        Map.of(
+                "startDate", LocalDateTime.now().minusMonths(1),
+                "minOrders", 5
+        )
 );
 ```
 
 ### Dashboard Statistics
 ```java
 Map<String, Object> dashboard = db.queryForMap(
-    "SELECT " +
-    "  COUNT(*) as total_users, " +
-    "  SUM(CASE WHEN status = 'active' THEN 1 ELSE 0 END) as active, " +
-    "  SUM(CASE WHEN status = 'inactive' THEN 1 ELSE 0 END) as inactive, " +
-    "  AVG(age) as avg_age " +
-    "FROM users"
+        "SELECT " +
+                "  COUNT(*) as total_users, " +
+                "  SUM(CASE WHEN status = 'active' THEN 1 ELSE 0 END) as active, " +
+                "  SUM(CASE WHEN status = 'inactive' THEN 1 ELSE 0 END) as inactive, " +
+                "  AVG(age) as avg_age " +
+                "FROM users"
 ).orElse(Collections.emptyMap());
 ```
 
@@ -332,15 +332,15 @@ Map<String, Object> dashboard = db.queryForMap(
 ### Batch Update
 ```java
 List<Map<String, Object>> batchParams = List.of(
-    Map.of("id", 1, "status", "completed"),
-    Map.of("id", 2, "status", "completed"),
-    Map.of("id", 3, "status", "completed"),
-    Map.of("id", 4, "status", "completed")
+        Map.of("id", 1, "status", "completed"),
+        Map.of("id", 2, "status", "completed"),
+        Map.of("id", 3, "status", "completed"),
+        Map.of("id", 4, "status", "completed")
 );
 
 List<Integer> results = db.executeBatch(
-    "UPDATE orders SET status = :status WHERE id = :id",
-    batchParams
+        "UPDATE orders SET status = :status WHERE id = :id",
+        batchParams
 );
 
 System.out.println("Updated " + results.size() + " orders");
@@ -349,23 +349,23 @@ System.out.println("Updated " + results.size() + " orders");
 ### Batch Insert
 ```java
 List<Map<String, Object>> newUsers = List.of(
-    Map.of("name", "Alice", "email", "alice@example.com"),
-    Map.of("name", "Bob", "email", "bob@example.com"),
-    Map.of("name", "Carol", "email", "carol@example.com")
+        Map.of("name", "Alice", "email", "alice@example.com"),
+        Map.of("name", "Bob", "email", "bob@example.com"),
+        Map.of("name", "Carol", "email", "carol@example.com")
 );
 
 db.executeBatch(
     "INSERT INTO users (name, email) VALUES (:name, :email)",
     newUsers
-);
+    );
 ```
 
 ### Insert Multiple Entities (Type-Safe)
 ```java
 List<User> users = Arrays.asList(
-    new User("Alice", "alice@example.com"),
-    new User("Bob", "bob@example.com"),
-    new User("Carol", "carol@example.com")
+        new User("Alice", "alice@example.com"),
+        new User("Bob", "bob@example.com"),
+        new User("Carol", "carol@example.com")
 );
 
 // Validates ALL entities first, then inserts in a single transaction
@@ -382,26 +382,38 @@ db.insertAll(users);
 PageResult<User> page = db.queryPage(User.class, 1, 20);
 
 System.out.println("Page: " + page.getPage() + "/" + page.getTotalPages());
-System.out.println("Total items: " + page.getTotalElements());
-System.out.println("Results: " + page.getResults().size());
+        System.out.println("Total items: " + page.getTotalElements());
+        System.out.println("Results: " + page.getResults().size());
 
 // Navigation
-if (page.hasNext()) {
-    PageResult<User> nextPage = db.queryPage(User.class, page.getPage() + 1, 20);
+        if (page.hasNext()) {
+PageResult<User> nextPage = db.queryPage(User.class, page.getPage() + 1, 20);
 }
 
-if (page.hasPrevious()) {
-    PageResult<User> prevPage = db.queryPage(User.class, page.getPage() - 1, 20);
+        if (page.hasPrevious()) {
+PageResult<User> prevPage = db.queryPage(User.class, page.getPage() - 1, 20);
 }
 ```
 
-### Paginate Custom Query
+### Paginate Custom Query (No Parameters)
 ```java
 PageResult<User> searchResults = db.queryPage(
     "SELECT * FROM users WHERE name LIKE '%john%' ORDER BY created_at DESC",
     User.class,
     2, // page 2
     10 // 10 per page
+);
+```
+
+### Paginate Custom Query (With Parameters)
+```java
+// The CORRECT way - pass parameters separately
+PageResult<User> searchResults = db.queryPage(
+    "SELECT * FROM users WHERE status = :status AND age > :minAge ORDER BY name",
+    User.class,
+    Map.of("status", "active", "minAge", 18),
+    1, // page 1
+    20 // 20 per page
 );
 ```
 
@@ -416,6 +428,25 @@ long totalElements = page.getTotalElements(); // Total items across all pages
 long totalPages = page.getTotalPages();      // Total number of pages
 boolean hasNext = page.hasNext();            // Has next page?
 boolean hasPrev = page.hasPrevious();        // Has previous page?
+```
+
+### Complete Pagination Example
+```java
+public PageResult<User> searchUsers(String searchTerm, String status, int page) {
+    return db.queryPage(
+        "SELECT * FROM users " +
+        "WHERE name LIKE :search " +
+        "AND status = :status " +
+        "ORDER BY created_at DESC",
+        User.class,
+        Map.of(
+            "search", "%" + searchTerm + "%",
+            "status", status
+        ),
+        page,
+        20
+    );
+}
 ```
 
 ---
@@ -965,6 +996,7 @@ PageResult<User> results = db.queryPage(
     "WHERE u.id IN (SELECT user_id FROM search_users_function(:term)) " +
     "ORDER BY u.name",
     User.class,
+    Map.of("term", searchTerm),
     1,
     20
 );
