@@ -5,5 +5,4 @@ import com.roelias.kurubind.metadata.FieldMetadata;
 
 public interface Validator {
     void validate(Object value, FieldMetadata field) throws ValidationException;
-    String getErrorMessage(Object value, FieldMetadata field);
 }
