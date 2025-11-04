@@ -38,7 +38,7 @@ public class KurubindRowMapper<T> implements RowMapper<T> {
                     // Aplicar handlers de lectura
                     List<Handler> handlers = handlerRegistry.getHandlersForField(field, dialect);
                     for (Handler handler : handlers) {
-                        value = handler.handleRead(value);
+                        value = handler.handleRead(value, field);
                     }
 
                     // Convertir tipos si es necesario

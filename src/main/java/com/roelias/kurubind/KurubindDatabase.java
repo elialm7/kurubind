@@ -665,7 +665,7 @@ public class KurubindDatabase {
 
             List<Handler> handlers = handlerRegistry.getHandlersForField(field, dialect);
             for (Handler handler : handlers) {
-                value = handler.handleWrite(value);
+                value = handler.handleWrite(value, field);
             }
 
             update.bind(field.getColumnName(), value);
