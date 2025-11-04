@@ -12,16 +12,6 @@
 - ✅ **SQL manual** cuando necesitas control total
 - ✅ **Ligera y no intrusiva** - solo depende de JDBI
 
-## 📦 Instalación
-
-```xml
-<dependency>
-    <groupId>com.kurubind</groupId>
-    <artifactId>kurubind</artifactId>
-    <version>1.0.0</version>
-</dependency>
-```
-
 ## 🚀 Quick Start
 
 ### 1. Definir una Entidad
@@ -34,11 +24,9 @@ public class Product {
     private Long id;
 
     @Column("name")
-    @NotNull(message = "Product name is required")
     private String name;
 
     @Column("price")
-    @Min(value = 0)
     private Double price;
 
     @Column("active")
@@ -99,14 +87,6 @@ db.delete(product);
 | `@Transient` | Ignora campo | `@Transient` |
 | `@QueryResponse` | Marca DTO para queries | `@QueryResponse` |
 
-### Validación
-
-| Anotación | Descripción | Ejemplo |
-|-----------|-------------|---------|
-| `@NotNull` | Campo no puede ser null | `@NotNull(message = "Required")` |
-| `@Min` | Valor mínimo | `@Min(value = 0)` |
-| `@Max` | Valor máximo | `@Max(value = 100)` |
-
 ### Generación de Valores
 
 | Anotación | Descripción | Ejemplo |
@@ -146,21 +126,6 @@ private String uuid;
 - `UpdatedAtGenerator` - Timestamp de actualización
 - `PrefixedCodeGenerator` - Códigos con prefijo personalizable
 
-## ✅ Validación
-
-### Validaciones Automáticas
-
-```java
-@Column("email")
-@NotNull(message = "Email is required")
-@Email(message = "Invalid email format")
-private String email;
-
-@Column("age")
-@Min(value = 18, message = "Must be 18+")
-@Max(value = 120)
-private Integer age;
-```
 
 ### Validación Acumulativa
 
@@ -173,13 +138,13 @@ invalid.setPrice(-100.0);  // Error 2
 invalid.setStock(15000);   // Error 3
 
 try {
-    db.insert(invalid);
+        db.insert(invalid);
 } catch (ValidationException e) {
-    // Obtiene los 3 errores juntos
-    for (ValidationError error : e.getErrors()) {
+        // Obtiene los 3 errores juntos
+        for (ValidationError error : e.getErrors()) {
         System.err.println(error.getFieldName() + ": " + error.getMessage());
-    }
-}
+        }
+        }
 ```
 
 ### Validators Custom
@@ -194,15 +159,15 @@ public @interface Email {
 
 // 2. Implementar validator
 public class EmailValidator implements Validator {
-    private static final Pattern EMAIL_PATTERN = 
-        Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
-    
+    private static final Pattern EMAIL_PATTERN =
+            Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
+
     public void validate(Object value, FieldMetadata field) {
         if (value != null && !EMAIL_PATTERN.matcher(value.toString()).matches()) {
             throw new ValidationException(getErrorMessage(value, field));
         }
     }
-    
+
     public String getErrorMessage(Object value, FieldMetadata field) {
         return "Invalid email: " + value;
     }
@@ -220,11 +185,11 @@ Los handlers transforman datos entre Java y la base de datos:
 // Handler para JSON
 public class JsonHandler implements Handler {
     private final ObjectMapper objectMapper = new ObjectMapper();
-    
+
     public Object handleWrite(Object javaValue) {
         return objectMapper.writeValueAsString(javaValue);
     }
-    
+
     public Object handleRead(Object dbValue) {
         return objectMapper.readValue(dbValue.toString(), Map.class);
     }
@@ -245,15 +210,15 @@ public class ProductRepository extends Repository<Product> {
     public ProductRepository(KurubindDatabase db) {
         super(db, Product.class);
     }
-    
+
     public List<Product> findActiveProducts() {
         return query("SELECT * FROM products WHERE active = true");
     }
-    
+
     public List<Product> findByPriceRange(double min, double max) {
         return db.query(
-            "SELECT * FROM products WHERE price BETWEEN :min AND :max",
-            Product.class
+                "SELECT * FROM products WHERE price BETWEEN :min AND :max",
+                Product.class
         );
     }
 }
@@ -276,7 +241,7 @@ public class PostgreSQLGenerator implements SQLGenerator {
         }
         return sql;
     }
-    
+
     public String getPlaceholder(FieldMetadata field) {
         String placeholder = ":" + field.getColumnName();
         if (field.hasAnnotation(JsonColumn.class)) {
@@ -302,8 +267,8 @@ JdbiProvider multitenantProvider = () -> {
 };
 
 KurubindDatabase db = KurubindDatabase.builder()
-    .withJdbiProvider(multitenantProvider)
-    .build();
+        .withJdbiProvider(multitenantProvider)
+        .build();
 
 // Usar
 TenantContext.setTenant("tenant1");
@@ -317,15 +282,15 @@ db.insert(product); // Se inserta en tenant1_db
 public class ProductSummary {
     @Column("id")
     private Long id;
-    
+
     @Column("total_value")
     private Double totalValue;
 }
 
 List<ProductSummary> summary = db.query("""
-    SELECT id, (price * stock) as total_value 
-    FROM products
-""", ProductSummary.class);
+            SELECT id, (price * stock) as total_value 
+            FROM products
+        """, ProductSummary.class);
 ```
 
 ## 🔄 Flujo de Operaciones
@@ -364,18 +329,18 @@ validatorRegistry.register(Email.class, new EmailValidator());
 // Value Generators
 ValueGeneratorRegistry generatorRegistry = new ValueGeneratorRegistry();
 generatorRegistry.register("UUID", new UuidGenerator());
-generatorRegistry.register("CREATED_AT", new CreatedAtGenerator());
-generatorRegistry.register("UPDATED_AT", new UpdatedAtGenerator());
+        generatorRegistry.register("CREATED_AT", new CreatedAtGenerator());
+        generatorRegistry.register("UPDATED_AT", new UpdatedAtGenerator());
 
 // Build
 KurubindDatabase db = KurubindDatabase.builder()
-    .withJdbi(jdbi)
-    .withHandlerRegistry(handlerRegistry)
-    .withSQLGeneratorRegistry(sqlRegistry)
-    .withValidatorRegistry(validatorRegistry)
-    .withValueGeneratorRegistry(generatorRegistry)
-    .withDialect(new Dialect("POSTGRESQL"))
-    .build();
+        .withJdbi(jdbi)
+        .withHandlerRegistry(handlerRegistry)
+        .withSQLGeneratorRegistry(sqlRegistry)
+        .withValidatorRegistry(validatorRegistry)
+        .withValueGeneratorRegistry(generatorRegistry)
+        .withDialect(new Dialect("POSTGRESQL"))
+        .build();
 ```
 
 ## 🎯 Filosofía
