@@ -37,7 +37,9 @@ public class EntityMetadata {
         }
         this.fields = new ArrayList<>();
         FieldMetadata foundIdField = null;
-        for(Field field : entityClass.getDeclaredFields()){
+
+
+       /* for(Field field : entityClass.getDeclaredFields()){
             if(field.isAnnotationPresent(Transient.class)){
                 continue;
             }
@@ -57,6 +59,37 @@ public class EntityMetadata {
 
             }
 
+        }*/
+
+        // Support for inherited fields
+        Class<?> currentClass = entityClass;
+        while(currentClass != null && currentClass != Object.class){
+            for(Field field : currentClass. getDeclaredFields()) {
+
+                if(fields.stream().anyMatch( f -> f.getFieldName().equals(field.getName()))) {
+                    continue;
+                }
+
+                if(field.isAnnotationPresent(Transient.class)) {
+                    continue;
+                }
+
+                if(field.isAnnotationPresent(Column.class)) {
+                    FieldMetadata fieldMetadata = new FieldMetadata(field);
+                    fields.add(fieldMetadata);
+
+                    if(fieldMetadata.isId()) {
+
+                        if(foundIdField != null) {
+                            throw new IllegalArgumentException("Class "+ entityClass.getName() + " has multiple @Id fields");
+                        }
+
+                        foundIdField = fieldMetadata;
+                    }
+                }
+
+            }
+            currentClass = currentClass.getSuperclass();
         }
 
         this.idField = foundIdField;
