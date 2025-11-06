@@ -255,7 +255,7 @@ public class KurubindDatabase {
         String sql = generator.generateSelectById(metadata);
 
         KurubindRowMapper<T> mapper = new KurubindRowMapper<>(
-                entityClass, handlerRegistry, dialect
+                metadata, handlerRegistry, dialect
         );
 
         return jdbiProvider.getJdbi().withHandle(handle ->
@@ -302,8 +302,9 @@ public class KurubindDatabase {
     }
 
     public <T> List<T> query(String sql, Class<T> resultClass) {
+        EntityMetadata metadata = getMetadata(resultClass);
         KurubindRowMapper<T> mapper = new KurubindRowMapper<>(
-                resultClass, handlerRegistry, dialect
+                metadata, handlerRegistry, dialect
         );
 
         return jdbiProvider.getJdbi().withHandle(handle ->
@@ -314,8 +315,9 @@ public class KurubindDatabase {
     }
 
     public <T> List<T> query(String sql, Class<T> resultClass, Map<String, Object> params) {
+        EntityMetadata metadata = getMetadata(resultClass);
         KurubindRowMapper<T> mapper = new KurubindRowMapper<>(
-                resultClass, handlerRegistry, dialect
+                metadata, handlerRegistry, dialect
         );
 
         return jdbiProvider.getJdbi().withHandle(handle -> {
@@ -326,8 +328,9 @@ public class KurubindDatabase {
     }
 
     public <T> Optional<T> queryOne(String sql, Class<T> resultClass) {
+        EntityMetadata metadata = getMetadata(resultClass);
         KurubindRowMapper<T> mapper = new KurubindRowMapper<>(
-                resultClass, handlerRegistry, dialect
+                metadata, handlerRegistry, dialect
         );
 
         return jdbiProvider.getJdbi().withHandle(handle ->
@@ -338,8 +341,9 @@ public class KurubindDatabase {
     }
 
     public <T> Optional<T> queryOne(String sql, Class<T> resultClass, Map<String, Object> params) {
+        EntityMetadata metadata = getMetadata(resultClass);
         KurubindRowMapper<T> mapper = new KurubindRowMapper<>(
-                resultClass, handlerRegistry, dialect
+                metadata, handlerRegistry, dialect
         );
 
         return jdbiProvider.getJdbi().withHandle(handle -> {
@@ -350,8 +354,9 @@ public class KurubindDatabase {
     }
 
     public <T> Stream<T> queryStream(String sql, Class<T> resultClass) {
+        EntityMetadata metadata = getMetadata(resultClass);
         KurubindRowMapper<T> mapper = new KurubindRowMapper<>(
-                resultClass, handlerRegistry, dialect
+                metadata, handlerRegistry, dialect
         );
 
         return jdbiProvider.getJdbi().withHandle(handle ->
@@ -548,9 +553,10 @@ public class KurubindDatabase {
     }
 
     public <T> RowMapper<T> getRowMapper(Class<T> resultClass) {
+        EntityMetadata metadata = getMetadata(resultClass);
         return (resultSet, ctx) -> {
             KurubindRowMapper<T> mapper = new KurubindRowMapper<>(
-                    resultClass, handlerRegistry, dialect
+                    metadata, handlerRegistry, dialect
             );
             return mapper.map(resultSet, ctx);
         };
