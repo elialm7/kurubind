@@ -147,9 +147,13 @@ public class KurubindDatabase {
        if(entities.isEmpty()) return;
 
        EntityMetadata metadata = getMetadata(entities.get(0).getClass());
+        if (metadata.isQueryResponse()) {
+            throw new IllegalArgumentException("Cannot delete @QueryResponse entities");
+        }
        if(!metadata.hasIdField()) {
               throw new IllegalArgumentException("Entity must have @Id field for delete");
        }
+
 
        execute(handle -> entities.forEach(entity -> internalDelete(handle, entity, metadata)));
     }
