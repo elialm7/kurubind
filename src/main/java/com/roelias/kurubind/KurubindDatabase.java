@@ -239,6 +239,31 @@ public class KurubindDatabase {
         return query(sql, entityClass);
     }
 
+    public <T> List<T> findAll(Class<T> entityClass, int limit) {
+        // Llama a la versión completa con offset 0
+        return findAll(entityClass, limit, 0);
+    }
+
+
+    public <T> List<T> findAll(Class<T> entityClass, int limit, int offset) {
+        // 1. Obtener metadatos y SQL base
+        EntityMetadata metadata = getMetadata(entityClass);
+
+        if (metadata.isQueryResponse()) {
+            throw new IllegalArgumentException("Cannot list @QueryResponse entities. Use query() instead.");
+        }
+
+        SQLGenerator generator = sqlGeneratorRegistry.getGenerator(dialect);
+        String sql = generator.generateSelect(metadata);
+        String pagedSql = buildPaginatedQuery(sql, 1, 1);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("limit", limit);
+        params.put("offset", offset);
+
+        return query(pagedSql, entityClass, params);
+    }
+
     public <T> Optional<T> findById(Class<T> entityClass, Object id) {
         EntityMetadata metadata = getMetadata(entityClass);
 
