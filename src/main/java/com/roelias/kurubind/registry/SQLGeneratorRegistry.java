@@ -2,7 +2,7 @@ package com.roelias.kurubind.registry;
 
 import com.roelias.kurubind.core.Dialect;
 import com.roelias.kurubind.core.SQLGenerator;
-import com.roelias.kurubind.ootb.GenericSQLGenerator;
+import com.roelias.kurubind.ootb.DefaultSQLGenerator;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,7 +14,7 @@ public class SQLGeneratorRegistry {
 
     public SQLGeneratorRegistry() {
         this.generators = new HashMap<>();
-        this.defaultGenerator = new GenericSQLGenerator();
+        this.defaultGenerator = new DefaultSQLGenerator();
     }
 
     public void register(Dialect dialect, SQLGenerator generator) {
