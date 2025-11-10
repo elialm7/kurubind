@@ -531,32 +531,56 @@ public class KurubindDatabase {
     }
 
     /**
-     * Ejecuta una consulta SQL y procesa los resultados como un Stream. ¡Importante! El Stream debe
-     * ser cerrado (ej: usando try-with-resources) para liberar la conexión a la base de datos.
+     * Ejecuta una consulta SQL con parámetros y procesa los resultados como un Stream.
      *
-     * @param sql La consulta SQL.
+     * <p>¡Importante! El Stream debe ser cerrado (ej: usando try-with-resources) para liberar la
+     * conexión a la base de datos.
+     *
+     * @param sql La consulta SQL con placeholders.
      * @param resultClass La clase a la que mapear.
+     * @param params Un mapa de parámetros.
      * @param <T> El tipo del resultado.
-     * @return Un {@link Stream} de objetos T.
+     * @return Un {@link Stream} de objetos T que debe ser cerrado.
+     */
+    public <T> Stream<T> queryStream(String sql, Class<T> resultClass, Map<String, Object> params) {
+        // 1. Obtener el mapper, igual que antes
+        EntityMetadata metadata = getMetadata(resultClass); //
+        KurubindRowMapper<T> mapper =
+                new KurubindRowMapper<>(
+                        metadata, handlerRegistry, dialect //
+                        );
+
+        // 2. Abrir un Handle manualmente (NO usar withHandle)
+        Handle handle = jdbiProvider.getJdbi().open(); //
+
+        try {
+            // 3. Crear la consulta y vincular parámetros
+            Query query = handle.createQuery(sql);
+            params.forEach(query::bind); //
+
+            // 4. Crear el stream y adjuntar el cierre del handle a su ciclo de vida
+            return query.map(mapper).stream().onClose(handle::close); // <-- Esta es la clave
+
+        } catch (Exception e) {
+            // Si algo falla ANTES de retornar el stream, cierra el handle
+            handle.close();
+            throw new RuntimeException("Error al crear el stream de la consulta", e);
+        }
+    }
+    /**
+     * Ejecuta una consulta SQL y procesa los resultados como un Stream.
+     *
+     * ¡Importante! El Stream debe ser cerrado (ej: usando try-with-resources)
+     * para liberar la conexión a la base de datos.
+     *
+     * @param sql         La consulta SQL.
+     * @param resultClass La clase a la que mapear.
+     * @param <T>         El tipo del resultado.
+     * @return Un {@link Stream} de objetos T que debe ser cerrado.
      */
     public <T> Stream<T> queryStream(String sql, Class<T> resultClass) {
-        EntityMetadata metadata = getMetadata(resultClass);
-        KurubindRowMapper<T> mapper = new KurubindRowMapper<>(metadata, handlerRegistry, dialect);
-
-        // Nota: La implementación original consumía el stream.
-        // Una implementación real de streaming requeriría Jdbi.stream()
-        // y manejar el ciclo de vida del handle.
-        // Por ahora, se mantiene la implementación existente que colecciona primero.
-        // TODO: Refactorizar a Jdbi.stream() si se requiere streaming real.
-        return jdbiProvider
-                .getJdbi()
-                .withHandle(
-                        handle ->
-                                handle.createQuery(sql).map(mapper).stream()
-                                        .collect(
-                                                Collectors
-                                                        .toList()) // Carga todo en memoria primero
-                                        .stream());
+        // Simplemente delega al método con parámetros usando un mapa vacío
+        return queryStream(sql, resultClass, Collections.emptyMap());
     }
 
     // =================================================================================
