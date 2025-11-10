@@ -7,40 +7,24 @@
     <groupId>com.roelias</groupId>
     <artifactId>kurubind</artifactId>
     <version>1.0.0</version>
-
-    <!-- ========= PROPIEDADES ========= -->
     <properties>
         <jdbi.version>3.49.6</jdbi.version>
-        <jackson.version>2.19.0</jackson.version>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
-        <!-- Versiones de plugins -->
         <maven.compiler.plugin.version>3.13.0</maven.compiler.plugin.version>
         <maven.source.plugin.version>3.3.1</maven.source.plugin.version>
         <maven.javadoc.plugin.version>3.6.3</maven.javadoc.plugin.version>
         <maven.site.plugin.version>3.12.1</maven.site.plugin.version>
         <maven.project-info.plugin.version>3.9.0</maven.project-info.plugin.version>
     </properties>
-
-    <!-- ========= DEPENDENCIAS ========= -->
     <dependencies>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.jdbi</groupId>
             <artifactId>jdbi3-core</artifactId>
             <version>${jdbi.version}</version>
         </dependency>
     </dependencies>
-
-    <!-- =================================================================== -->
-    <!--      SECCIÓN <build>: Para compilar y empaquetar (mvn package)      -->
-    <!-- =================================================================== -->
     <build>
         <pluginManagement>
             <plugins>
@@ -68,13 +52,10 @@
         </pluginManagement>
 
         <plugins>
-            <!-- 1. Plugin de Compilación -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
             </plugin>
-
-            <!-- 2. PLUGIN DE CÓDIGO FUENTE (Genera -sources.jar) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
@@ -88,8 +69,6 @@
                     </execution>
                 </executions>
             </plugin>
-
-            <!-- 3. PLUGIN DE JAVADOC (Genera -javadoc.jar) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
@@ -108,21 +87,14 @@
                     </execution>
                 </executions>
             </plugin>
-
-            <!-- 4. Plugin de Sitio Web (necesario para 'mvn site') -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
             </plugin>
         </plugins>
     </build>
-
-    <!-- =================================================================== -->
-    <!--    SECCIÓN <reporting>: Para generar el SITIO WEB HTML (mvn site)    -->
-    <!-- =================================================================== -->
     <reporting>
         <plugins>
-            <!-- 1. Reportes de Información del Proyecto -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
@@ -136,8 +108,6 @@
                     </reportSet>
                 </reportSets>
             </plugin>
-
-            <!-- 2. Reporte de Javadoc (VERSIÓN HTML PARA SITIO WEB) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
@@ -154,5 +124,4 @@
             </plugin>
         </plugins>
     </reporting>
-
 </project>
