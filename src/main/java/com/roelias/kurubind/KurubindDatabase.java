@@ -179,11 +179,6 @@ public class KurubindDatabase {
         });
     }
 
-    public <T> void deleteByIds(Class<T> entityClass, List<Object> ids) {
-        for (Object id : ids) {
-            deleteById(entityClass, id);
-        }
-    }
 
     // ========  CRUD INTERNAL OPERATIONS =========
 
@@ -231,7 +226,7 @@ public class KurubindDatabase {
 
     // ========== Query Operations ==========
 
-    public <T> List<T> list(Class<T> entityClass) {
+    public <T> List<T> findAll(Class<T> entityClass) {
         EntityMetadata metadata = getMetadata(entityClass);
 
         if (metadata.isQueryResponse()) {
@@ -244,7 +239,7 @@ public class KurubindDatabase {
         return query(sql, entityClass);
     }
 
-    public <T> Optional<T> queryById(Class<T> entityClass, Object id) {
+    public <T> Optional<T> findById(Class<T> entityClass, Object id) {
         EntityMetadata metadata = getMetadata(entityClass);
 
         if (metadata.isQueryResponse()) {
@@ -269,26 +264,26 @@ public class KurubindDatabase {
         );
     }
 
-    public <T> List<T> queryByIds(Class<T> entityClass, List<Object> ids) {
+    public <T> List<T> findAllByIds(Class<T> entityClass, List<Object> ids) {
         if (ids.isEmpty()) return Collections.emptyList();
 
         List<T> results = new ArrayList<>();
         for (Object id : ids) {
-            queryById(entityClass, id).ifPresent(results::add);
+            findById(entityClass, id).ifPresent(results::add);
         }
         return results;
     }
 
-    public <T> Optional<T> queryFirst(Class<T> entityClass) {
-        List<T> results = list(entityClass);
+    public <T> Optional<T> findFirts(Class<T> entityClass) {
+        List<T> results = findAll(entityClass);
         return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
     }
 
     public <T> boolean exists(Class<T> entityClass, Object id) {
-        return queryById(entityClass, id).isPresent();
+        return findById(entityClass, id).isPresent();
     }
 
-    public Long count(Class<?> entityClass) {
+    public Long countAll(Class<?> entityClass) {
         EntityMetadata metadata = getMetadata(entityClass);
 
         if (metadata.isQueryResponse()) {
@@ -605,10 +600,33 @@ public class KurubindDatabase {
         return new PageResult<>(results, page, pageSize, total);
     }
 
+
+
+    // ========== Pagination (con Mapas) ==========
+
+
+    public PageResult<Map<String, Object>> queryPageForMaps(String sql, int page, int pageSize) {
+        return queryPageForMaps(sql, Collections.emptyMap(), page, pageSize);
+    }
+
+
+    public PageResult<Map<String, Object>> queryPageForMaps(String sql, Map<String, Object> params, int page, int pageSize) {
+        String countSql = "SELECT COUNT(*) FROM (" + sql + ") AS count_query";
+        long total = queryForLong(countSql, params); //
+
+        String pagedSql = buildPaginatedQuery(sql, page, pageSize); //
+        Map<String, Object> allParams = new HashMap<>(params);
+        allParams.put("limit", pageSize);
+        allParams.put("offset", (page - 1) * pageSize);
+        List<Map<String, Object>> results = queryForMaps(pagedSql, allParams); //
+        return new PageResult<>(results, page, pageSize, total);
+    }
     private String buildPaginatedQuery(String sql, int page, int pageSize) {
         // All three databases (MySQL, PostgreSQL, SQLite) support LIMIT/OFFSET
         return sql + " LIMIT :limit OFFSET :offset";
     }
+
+
 
     // ========== Value Generation ==========
 
