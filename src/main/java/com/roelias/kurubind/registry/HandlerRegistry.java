@@ -6,21 +6,23 @@ import com.roelias.kurubind.metadata.FieldMetadata;
 
 import java.lang.annotation.Annotation;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class HandlerRegistry {
     private final Map<Class<? extends Annotation>, Handler> genericHandlers;
     private final Map<HandlerKey, Handler> dialectHandlers;
 
     public HandlerRegistry() {
-        this.genericHandlers = new HashMap<>();
-        this.dialectHandlers = new HashMap<>();
+        this.genericHandlers = new ConcurrentHashMap<>();
+        this.dialectHandlers = new ConcurrentHashMap<>();
     }
 
     public void register(Class<? extends Annotation> annotationType, Handler handler) {
         genericHandlers.put(annotationType, handler);
     }
 
-    public void register(Class<? extends Annotation> annotationType, Dialect dialect, Handler handler) {
+    public void register(
+            Class<? extends Annotation> annotationType, Dialect dialect, Handler handler) {
         dialectHandlers.put(new HandlerKey(annotationType, dialect), handler);
     }
 
