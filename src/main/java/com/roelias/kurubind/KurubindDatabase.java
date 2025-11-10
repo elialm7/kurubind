@@ -61,7 +61,7 @@ public class KurubindDatabase {
         }
         generateValues(entity, metadata, true, false);
         validateEntity(entity, metadata);
-
+        // execute
         // abre una transaction y llama al helper interno
         execute(handle -> {
             internalInsert(handle, entity, metadata);
