@@ -37,13 +37,19 @@ public class KurubindDatabase {
 
     private final Map<Class<?>, EntityMetadata> metadataCache = new ConcurrentHashMap<>();
 
-    private KurubindDatabase(Builder builder) {
-        this.jdbiProvider = builder.jdbiProvider;
-        this.handlerRegistry = builder.handlerRegistry;
-        this.sqlGeneratorRegistry = builder.sqlGeneratorRegistry;
-        this.validatorRegistry = builder.validatorRegistry;
-        this.valueGeneratorRegistry = builder.valueGeneratorRegistry;
-        this.dialect = builder.dialect;
+    public KurubindDatabase(
+            JdbiProvider jdbiProvider,
+            HandlerRegistry handlerRegistry,
+            SQLGeneratorRegistry sqlGeneratorRegistry,
+            ValidatorRegistry validatorRegistry,
+            ValueGeneratorRegistry valueGeneratorRegistry,
+            Dialect dialect) {
+        this.handlerRegistry = handlerRegistry;
+        this.sqlGeneratorRegistry = sqlGeneratorRegistry;
+        this.validatorRegistry = validatorRegistry;
+        this.valueGeneratorRegistry = valueGeneratorRegistry;
+        this.dialect = dialect;
+        this.jdbiProvider = jdbiProvider;
     }
 
     public static Builder builder() {
@@ -815,40 +821,19 @@ public class KurubindDatabase {
     }
 
     public static class Builder {
-        private JdbiProvider jdbiProvider;
-        private HandlerRegistry handlerRegistry = new HandlerRegistry();
-        private SQLGeneratorRegistry sqlGeneratorRegistry = new SQLGeneratorRegistry();
-        private ValidatorRegistry validatorRegistry = new ValidatorRegistry();
-        private ValueGeneratorRegistry valueGeneratorRegistry = new ValueGeneratorRegistry();
+        private boolean withProviderState = false;
+        private Jdbi jdbi;
         private Dialect dialect;
+        private JdbiProvider jdbiProvider;
+        private List<KurubindModule> modules = new ArrayList<>();
+        private ValidatorRegistry validatorRegistry = new ValidatorRegistry();
+        private HandlerRegistry handlerRegistry = new HandlerRegistry();
+        private ValueGeneratorRegistry valueGeneratorRegistry = new ValueGeneratorRegistry();
+        private SQLGeneratorRegistry sqlGeneratorRegistry = new SQLGeneratorRegistry();
 
         public Builder withJdbi(Jdbi jdbi) {
-            this.jdbiProvider = () -> jdbi;
-            return this;
-        }
-
-        public Builder withJdbiProvider(JdbiProvider jdbiProvider) {
-            this.jdbiProvider = jdbiProvider;
-            return this;
-        }
-
-        public Builder withHandlerRegistry(HandlerRegistry handlerRegistry) {
-            this.handlerRegistry = handlerRegistry;
-            return this;
-        }
-
-        public Builder withSQLGeneratorRegistry(SQLGeneratorRegistry sqlGeneratorRegistry) {
-            this.sqlGeneratorRegistry = sqlGeneratorRegistry;
-            return this;
-        }
-
-        public Builder withValidatorRegistry(ValidatorRegistry validatorRegistry) {
-            this.validatorRegistry = validatorRegistry;
-            return this;
-        }
-
-        public Builder withValueGeneratorRegistry(ValueGeneratorRegistry valueGeneratorRegistry) {
-            this.valueGeneratorRegistry = valueGeneratorRegistry;
+            this.jdbi = jdbi;
+            this.withProviderState = false;
             return this;
         }
 
@@ -857,11 +842,49 @@ public class KurubindDatabase {
             return this;
         }
 
-        public KurubindDatabase build() {
-            if (jdbiProvider == null) {
-                throw new IllegalStateException("Se debe proporcionar JDBI o JdbiProvider");
+        public Builder withJdbiProvider(JdbiProvider jdbiProvider) {
+            this.jdbiProvider = jdbiProvider;
+            this.withProviderState = true;
+            return this;
+        }
+
+        public Builder installModule(KurubindModule module) {
+            if (module != null) {
+                this.modules.add(module);
             }
-            return new KurubindDatabase(this);
+            return this;
+        }
+
+        public KurubindDatabase build() {
+            Objects.requireNonNull(jdbi, "Jdbi can't be null, You must provide a Jdbi instance.");
+            if (this.dialect == null) {
+                this.dialect = new Dialect("ANSI");
+            }
+
+            JdbiProvider jdbiProvider;
+
+            if (withProviderState) {
+                jdbiProvider = this.jdbiProvider;
+            } else {
+                jdbiProvider = () -> this.jdbi;
+            }
+
+            RegistryCollector collector =
+                    new RegistryCollector(
+                            this.validatorRegistry,
+                            this.handlerRegistry,
+                            this.valueGeneratorRegistry,
+                            this.sqlGeneratorRegistry);
+            for (KurubindModule module : this.modules) {
+                module.configure(collector);
+            }
+            return new KurubindDatabase(
+                    jdbiProvider,
+                    this.handlerRegistry,
+                    this.sqlGeneratorRegistry,
+                    this.validatorRegistry,
+                    this.valueGeneratorRegistry,
+                    this.dialect);
         }
     }
 }
