@@ -12,11 +12,9 @@ import com.roelias.kurubind.registry.HandlerRegistry;
 import com.roelias.kurubind.registry.SQLGeneratorRegistry;
 import com.roelias.kurubind.registry.ValidatorRegistry;
 import com.roelias.kurubind.registry.ValueGeneratorRegistry;
-
 import org.jdbi.v3.core.Handle;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.mapper.RowMapper;
-import org.jdbi.v3.core.statement.Call;
 import org.jdbi.v3.core.statement.Query;
 import org.jdbi.v3.core.statement.Update;
 
@@ -86,9 +84,7 @@ public class KurubindDatabase {
         }
         executeInTransaction(
                 (Consumer<Handle>)
-                        handle ->
-                                entities.forEach(
-                                        entity -> internalInsert(handle, entity, metadata)));
+                        handle -> entities.forEach(entity -> internalInsert(handle, entity, metadata)));
     }
 
     public <T> void update(T entity) {
@@ -98,8 +94,7 @@ public class KurubindDatabase {
             throw new IllegalArgumentException("No se pueden actualizar entidades @QueryResponse");
         }
         if (!metadata.hasIdField()) {
-            throw new IllegalArgumentException(
-                    "La entidad debe tener un campo @Id para actualizar");
+            throw new IllegalArgumentException("La entidad debe tener un campo @Id para actualizar");
         }
 
         generateValues(entity, metadata, false, true);
@@ -118,21 +113,17 @@ public class KurubindDatabase {
 
         for (T entity : entities) {
             if (metadata.isQueryResponse()) {
-                throw new IllegalArgumentException(
-                        "No se pueden actualizar entidades @QueryResponse");
+                throw new IllegalArgumentException("No se pueden actualizar entidades @QueryResponse");
             }
             if (!metadata.hasIdField()) {
-                throw new IllegalArgumentException(
-                        "La entidad debe tener un campo @Id para actualizar");
+                throw new IllegalArgumentException("La entidad debe tener un campo @Id para actualizar");
             }
             generateValues(entity, metadata, false, true);
             validateEntity(entity, metadata);
         }
         executeInTransaction(
                 (Consumer<Handle>)
-                        handle ->
-                                entities.forEach(
-                                        entity -> internalUpdate(handle, entity, metadata)));
+                        handle -> entities.forEach(entity -> internalUpdate(handle, entity, metadata)));
     }
 
     public <T> void delete(T entity) {
@@ -164,9 +155,7 @@ public class KurubindDatabase {
 
         executeInTransaction(
                 (Consumer<Handle>)
-                        handle ->
-                                entities.forEach(
-                                        entity -> internalDelete(handle, entity, metadata)));
+                        handle -> entities.forEach(entity -> internalDelete(handle, entity, metadata)));
     }
 
     public <T> void deleteByIds(Class<T> entityClass, List<Object> ids) {
@@ -209,9 +198,7 @@ public class KurubindDatabase {
 
         executeInTransaction(
                 handle -> {
-                    handle.createUpdate(sql)
-                            .bind(metadata.getIdField().getColumnName(), id)
-                            .execute();
+                    handle.createUpdate(sql).bind(metadata.getIdField().getColumnName(), id).execute();
                 });
     }
 
@@ -265,7 +252,13 @@ public class KurubindDatabase {
 
         return jdbiProvider
                 .getJdbi()
-                .withHandle(handle -> handle.createQuery(sql).bind("id", id).map(mapper).findOne());
+                .withHandle(
+                        handle ->
+                                handle
+                                        .createQuery(sql)
+                                        .bind(metadata.getIdField().getColumnName(), id)
+                                        .map(mapper)
+                                        .findOne());
     }
 
     public <T> List<T> findAllByIds(Class<T> entityClass, List<Object> ids) {
@@ -278,8 +271,7 @@ public class KurubindDatabase {
     }
 
     public <T> Optional<T> findFirst(Class<T> entityClass) {
-        // Corrección de nombre: findFirts -> findFirst
-        List<T> results = findAll(entityClass, 1); // Usa el método optimizado
+        List<T> results = findAll(entityClass, 1);
         return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
     }
 
@@ -302,9 +294,7 @@ public class KurubindDatabase {
     public <T> List<T> query(String sql, Class<T> resultClass) {
         EntityMetadata metadata = getMetadata(resultClass);
         KurubindRowMapper<T> mapper = new KurubindRowMapper<>(metadata, handlerRegistry, dialect);
-        return jdbiProvider
-                .getJdbi()
-                .withHandle(handle -> handle.createQuery(sql).map(mapper).list());
+        return jdbiProvider.getJdbi().withHandle(handle -> handle.createQuery(sql).map(mapper).list());
     }
 
     public <T> List<T> query(String sql, Class<T> resultClass, Map<String, Object> params) {
@@ -346,7 +336,7 @@ public class KurubindDatabase {
         KurubindRowMapper<T> mapper =
                 new KurubindRowMapper<>(
                         metadata, handlerRegistry, dialect //
-                        );
+                );
 
         Handle handle = jdbiProvider.getJdbi().open(); //
         try {
@@ -365,9 +355,7 @@ public class KurubindDatabase {
     }
 
     public List<Map<String, Object>> queryForMaps(String sql) {
-        return jdbiProvider
-                .getJdbi()
-                .withHandle(handle -> handle.createQuery(sql).mapToMap().list());
+        return jdbiProvider.getJdbi().withHandle(handle -> handle.createQuery(sql).mapToMap().list());
     }
 
     public List<Map<String, Object>> queryForMaps(String sql, Map<String, Object> params) {
@@ -416,9 +404,7 @@ public class KurubindDatabase {
     }
 
     public <T> List<T> queryForList(String sql, Class<T> type) {
-        return jdbiProvider
-                .getJdbi()
-                .withHandle(handle -> handle.createQuery(sql).mapTo(type).list());
+        return jdbiProvider.getJdbi().withHandle(handle -> handle.createQuery(sql).mapTo(type).list());
     }
 
     public <T> List<T> queryForList(String sql, Class<T> type, Map<String, Object> params) {
@@ -532,58 +518,6 @@ public class KurubindDatabase {
                         });
     }
 
-    public void callProcedure(String procedureName) {
-        jdbiProvider
-                .getJdbi()
-                .useHandle(handle -> handle.createCall("{call " + procedureName + "()}").invoke());
-    }
-
-    public void callProcedure(String procedureName, Map<String, Object> params) {
-        jdbiProvider
-                .getJdbi()
-                .useHandle(
-                        handle -> {
-                            StringBuilder sql =
-                                    new StringBuilder("{call ").append(procedureName).append("(");
-                            sql.append(String.join(",", Collections.nCopies(params.size(), "?")));
-                            sql.append(")}");
-
-                            Call call = handle.createCall(sql.toString());
-                            params.forEach(
-                                    call::bind); // Asume que el mapa está ordenado o que JDBI
-                            // maneja el binding
-                            call.invoke();
-                        });
-    }
-
-    public <T> Optional<T> callFunction(String functionName, Class<T> returnType) {
-        return jdbiProvider
-                .getJdbi()
-                .withHandle(
-                        handle ->
-                                handle.createQuery("SELECT " + functionName + "()")
-                                        .mapTo(returnType)
-                                        .findOne());
-    }
-
-    public <T> Optional<T> callFunction(
-            String functionName, Class<T> returnType, Map<String, Object> params) {
-        return jdbiProvider
-                .getJdbi()
-                .withHandle(
-                        handle -> {
-                            String placeholders =
-                                    params.keySet().stream()
-                                            .map(k -> ":" + k)
-                                            .collect(Collectors.joining(","));
-                            String sql = "SELECT " + functionName + "(" + placeholders + ")";
-
-                            Query query = handle.createQuery(sql);
-                            params.forEach(query::bind);
-                            return query.mapTo(returnType).findOne();
-                        });
-    }
-
     public void executeInTransaction(Consumer<Handle> handleConsumer) {
         jdbiProvider.getJdbi().useTransaction(handleConsumer::accept);
     }
@@ -596,7 +530,7 @@ public class KurubindDatabase {
         jdbiProvider.getJdbi().useHandle(handleConsumer::accept);
     }
 
-    public <T> T withHandle(Function<Handle, T> handleFunction) {
+    public <T> T executeWithHandle(Function<Handle, T> handleFunction) {
         return jdbiProvider.getJdbi().withHandle(handleFunction::apply);
     }
 
@@ -607,8 +541,7 @@ public class KurubindDatabase {
     public <T> RowMapper<T> getRowMapper(Class<T> resultClass) {
         EntityMetadata metadata = getMetadata(resultClass);
         return (resultSet, ctx) -> {
-            KurubindRowMapper<T> mapper =
-                    new KurubindRowMapper<>(metadata, handlerRegistry, dialect);
+            KurubindRowMapper<T> mapper = new KurubindRowMapper<>(metadata, handlerRegistry, dialect);
             return mapper.map(resultSet, ctx);
         };
     }
@@ -623,7 +556,8 @@ public class KurubindDatabase {
 
         if (metadata.hasAutoGeneratedId()) {
             Object generatedId =
-                    update.executeAndReturnGeneratedKeys(metadata.getIdField().getColumnName())
+                    update
+                            .executeAndReturnGeneratedKeys(metadata.getIdField().getColumnName())
                             .mapTo(metadata.getIdField().getFieldType())
                             .one();
             metadata.getIdField().setValue(entity, generatedId);
@@ -646,7 +580,8 @@ public class KurubindDatabase {
         SQLGenerator generator = sqlGeneratorRegistry.getGenerator(dialect);
         String sql = generator.generateDelete(metadata);
 
-        handle.createUpdate(sql)
+        handle
+                .createUpdate(sql)
                 .bind(metadata.getIdField().getColumnName(), metadata.getIdField().getValue(entity))
                 .execute();
     }
@@ -671,8 +606,7 @@ public class KurubindDatabase {
                     }
 
                     if (!defaultValue.value().isEmpty()) {
-                        Object parsedValue =
-                                parseLiteral(defaultValue.value(), field.getFieldType());
+                        Object parsedValue = parseLiteral(defaultValue.value(), field.getFieldType());
                         field.setValue(entity, parsedValue);
                     } else if (!defaultValue.generator().isEmpty()) {
                         ValueGenerator generator =
@@ -689,8 +623,7 @@ public class KurubindDatabase {
                         (isInsert && generated.onInsert()) || (isUpdate && generated.onUpdate());
 
                 if (shouldGenerate) {
-                    ValueGenerator generator =
-                            valueGeneratorRegistry.getGenerator(generated.generator());
+                    ValueGenerator generator = valueGeneratorRegistry.getGenerator(generated.generator());
                     Object generatedValue = generator.generate(entity, field);
                     field.setValue(entity, generatedValue);
                 }
