@@ -6,9 +6,7 @@ import com.roelias.kurubind.annotations.Transient;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class FieldMetadata {
 
@@ -28,11 +26,29 @@ public class FieldMetadata {
         this.columnName = columnAnnotation != null ? columnAnnotation.value() : field.getName();
         this.isId = field.isAnnotationPresent(Id.class);
         this.isTransient = field.isAnnotationPresent(Transient.class);
+
         this.annotations = new HashMap<>();
-        for(Annotation annotation : field.getAnnotations()) {
-            this.annotations.put(annotation.annotationType(), annotation);
-        }
+        collectAnnotationRecursively(field.getAnnotations(), this.annotations, new HashSet<>());
     }
+
+    private void collectAnnotationRecursively(
+            Annotation[] annotationsToScan,
+            Map<Class<? extends Annotation>, Annotation> collected,
+            Set<Class<? extends Annotation>> visited
+    ) {
+        for (Annotation annotation : annotationsToScan) {
+            Class<? extends Annotation> type = annotation.annotationType();
+            if (type.getPackage().getName().startsWith("java.lang.annotation") || !visited.add(type)) {
+                continue;
+            }
+            if (!collected.containsKey(type)) {
+                collected.put(type, annotation);
+            }
+            collectAnnotationRecursively(type.getAnnotations(), collected, visited);
+        }
+
+    }
+
 
     public String getFieldName() {
         return fieldName;
@@ -49,6 +65,7 @@ public class FieldMetadata {
     public boolean isTransient() {
         return isTransient;
     }
+
     public boolean hasAnnotation(Class<? extends Annotation> annotationType) {
         return annotations.containsKey(annotationType);
     }

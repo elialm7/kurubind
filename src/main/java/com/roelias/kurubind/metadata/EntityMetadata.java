@@ -3,9 +3,7 @@ package com.roelias.kurubind.metadata;
 import com.roelias.kurubind.annotations.*;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.RecordComponent;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,70 +22,39 @@ public class EntityMetadata {
     public EntityMetadata(Class<?> entityClass) {
         this.entityClass = entityClass;
         this.isQueryResponse = entityClass.isAnnotationPresent(QueryResponse.class);
-        if(!isQueryResponse){
+        if (!isQueryResponse) {
             Table tableAnnotation = entityClass.getAnnotation(Table.class);
-            if(tableAnnotation == null){
-                throw new IllegalArgumentException("Class "+ entityClass.getName() + " must be annotated with @Table or @QueryResponse");
+            if (tableAnnotation == null) {
+                throw new IllegalArgumentException("Class " + entityClass.getName() + " must be annotated with @Table or @QueryResponse");
             }
             this.tableName = tableAnnotation.name();
             this.schema = tableAnnotation.schema();
-        }else {
+        } else {
             this.tableName = null;
             this.schema = null;
         }
         this.fields = new ArrayList<>();
         FieldMetadata foundIdField = null;
-
-
-       /* for(Field field : entityClass.getDeclaredFields()){
-            if(field.isAnnotationPresent(Transient.class)){
-                continue;
-            }
-
-            if(field.isAnnotationPresent(Column.class)){
-                FieldMetadata fieldMetadata = new FieldMetadata(field);
-                fields.add(fieldMetadata);
-
-                if(fieldMetadata.isId()){
-
-                    if(foundIdField != null){
-                        throw new IllegalArgumentException("Class "+ entityClass.getName() + " has multiple @Id fields");
-                    }
-
-                    foundIdField = fieldMetadata;
-                }
-
-            }
-
-        }*/
-
-        // Support for inherited fields
         Class<?> currentClass = entityClass;
-        while(currentClass != null && currentClass != Object.class){
-            for(Field field : currentClass. getDeclaredFields()) {
+        while (currentClass != null && currentClass != Object.class) {
+            for (Field field : currentClass.getDeclaredFields()) {
 
-                if(fields.stream().anyMatch( f -> f.getFieldName().equals(field.getName()))) {
+                if (fields.stream().anyMatch(f -> f.getFieldName().equals(field.getName()))) {
                     continue;
                 }
-
-                if(field.isAnnotationPresent(Transient.class)) {
+                if (field.isAnnotationPresent(Transient.class)) {
                     continue;
                 }
-
-                if(field.isAnnotationPresent(Column.class)) {
+                if (field.isAnnotationPresent(Column.class)) {
                     FieldMetadata fieldMetadata = new FieldMetadata(field);
                     fields.add(fieldMetadata);
-
-                    if(fieldMetadata.isId()) {
-
-                        if(foundIdField != null) {
-                            throw new IllegalArgumentException("Class "+ entityClass.getName() + " has multiple @Id fields");
+                    if (fieldMetadata.isId()) {
+                        if (foundIdField != null) {
+                            throw new IllegalArgumentException("Class " + entityClass.getName() + " has multiple @Id fields");
                         }
-
                         foundIdField = fieldMetadata;
                     }
                 }
-
             }
             currentClass = currentClass.getSuperclass();
         }
