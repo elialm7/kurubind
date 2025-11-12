@@ -61,7 +61,7 @@ public class KurubindDatabase {
     public <T> void insert(T entity) {
         EntityMetadata metadata = getMetadata(entity.getClass());
         if (metadata.isQueryResponse()) {
-            throw new IllegalArgumentException("No se pueden insertar entidades @QueryResponse");
+            throw new IllegalArgumentException("Can't insert @QueryResponse entities, reason: " + metadata.getEntityClass().getName());
         }
         generateValues(entity, metadata, true, false);
         validateEntity(entity, metadata);
@@ -76,7 +76,7 @@ public class KurubindDatabase {
 
         EntityMetadata metadata = getMetadata(entities.get(0).getClass());
         if (metadata.isQueryResponse()) {
-            throw new IllegalArgumentException("No se pueden insertar entidades @QueryResponse");
+            throw new IllegalArgumentException("Can't insert @QueryResponse entities, reason: " + metadata.getEntityClass().getName());
         }
         for (T entity : entities) {
             generateValues(entity, metadata, true, false);
@@ -91,10 +91,10 @@ public class KurubindDatabase {
         EntityMetadata metadata = getMetadata(entity.getClass());
 
         if (metadata.isQueryResponse()) {
-            throw new IllegalArgumentException("No se pueden actualizar entidades @QueryResponse");
+            throw new IllegalArgumentException("Can't update @QueryResponse entities, reason: " + metadata.getEntityClass().getName());
         }
         if (!metadata.hasIdField()) {
-            throw new IllegalArgumentException("La entidad debe tener un campo @Id para actualizar");
+            throw new IllegalArgumentException("Entity must have an @Id field to perform update, problema in class :  " + metadata.getEntityClass().getName());
         }
 
         generateValues(entity, metadata, false, true);
@@ -113,10 +113,10 @@ public class KurubindDatabase {
 
         for (T entity : entities) {
             if (metadata.isQueryResponse()) {
-                throw new IllegalArgumentException("No se pueden actualizar entidades @QueryResponse");
+                throw new IllegalArgumentException("Can't update @QueryResponse entities, reason: " + metadata.getEntityClass().getName());
             }
             if (!metadata.hasIdField()) {
-                throw new IllegalArgumentException("La entidad debe tener un campo @Id para actualizar");
+                throw new IllegalArgumentException("Entity must have an @Id field to perform update");
             }
             generateValues(entity, metadata, false, true);
             validateEntity(entity, metadata);
@@ -444,9 +444,6 @@ public class KurubindDatabase {
 
     public <T> PageResult<T> queryPage(Class<T> entityClass, int page, int pageSize) {
         EntityMetadata metadata = getMetadata(entityClass);
-        if (metadata.isQueryResponse()) {
-            throw new IllegalArgumentException("No se pueden paginar entidades @QueryResponse.");
-        }
         SQLGenerator generator = sqlGeneratorRegistry.getGenerator(dialect);
         String sql = generator.generateSelect(metadata);
         return queryPage(sql, entityClass, Collections.emptyMap(), page, pageSize);
