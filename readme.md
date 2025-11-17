@@ -1,5 +1,9 @@
 # KuruBind
 
+[![Java](https://img.shields.io/badge/Java-17%2B-blue.svg)](https://www.oracle.com/java/)
+[![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](LICENSE)
+[![Thread-Safe](https://img.shields.io/badge/Thread--Safe-100%25-green.svg)]()
+
 KuruBind is a lightweight, annotation-driven database library for Java that sits in the "sweet spot" between the
 complexity of a full-blown ORM (like Hibernate/JPA) and the manual effort of raw SQL (like plain JDBI or JDBC).
 
@@ -316,47 +320,47 @@ import com.roelias.kurubind.metadata.FieldMetadata;
 public @interface Jsonb {
 }
 
-        // 2. Create the Handler
+// 2. Create the Handler
 // (Assumes a 'PGobject' from Postgres and a 'Map' in Java)
-        public class JsonbHandler implements Handler {
-            private final ObjectMapper mapper = new ObjectMapper();
+public class JsonbHandler implements Handler {
+    private final ObjectMapper mapper = new ObjectMapper();
 
-            @Override
-            public Object handleWrite(Object javaValue, FieldMetadata fieldMeta) {
-                // Convert Map -> JSON String -> PGobject
-                try {
-                    PGobject pgObject = new PGobject();
-                    pgObject.setType("jsonb");
-                    pgObject.setValue(mapper.writeValueAsString(javaValue));
-                    return pgObject;
-                } catch (Exception e) {
-                    throw new RuntimeException("Failed to serialize JSONB", e);
-                }
-            }
-
-            @Override
-            public Object handleRead(Object dbValue, FieldMetadata fieldMeta) {
-                // Convert PGobject -> JSON String -> Map
-                try {
-                    String json = ((PGobject) dbValue).getValue();
-                    return mapper.readValue(json, Map.class);
-                } catch (Exception e) {
-                    throw new RuntimeException("Failed to parse JSONB", e);
-                }
-            }
+    @Override
+    public Object handleWrite(Object javaValue, FieldMetadata fieldMeta) {
+        // Convert Map -> JSON String -> PGobject
+        try {
+            PGobject pgObject = new PGobject();
+            pgObject.setType("jsonb");
+            pgObject.setValue(mapper.writeValueAsString(javaValue));
+            return pgObject;
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to serialize JSONB", e);
         }
+    }
+
+    @Override
+    public Object handleRead(Object dbValue, FieldMetadata fieldMeta) {
+        // Convert PGobject -> JSON String -> Map
+        try {
+            String json = ((PGobject) dbValue).getValue();
+            return mapper.readValue(json, Map.class);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to parse JSONB", e);
+        }
+    }
+}
 
 // 3. Register it in your module
 registries.
 
-        handlers().
+handlers().
 
-        register(Jsonb .class, new JsonbHandler());
+register(Jsonb .class, new JsonbHandler());
 
-        // 4. Use it in your entity
-        @Jsonb
-        @Column("metadata")
-        private Map<String, Object> metadata;
+// 4. Use it in your entity
+@Jsonb
+@Column("metadata")
+private Map<String, Object> metadata;
 ```
 
 ### 3. Validator
@@ -375,30 +379,30 @@ import com.roelias.kurubind.exceptions.ValidationException;
 public @interface NotNullOrEmpty {
 }
 
-        // 2. Create the Validator
-        public class NotNullOrEmptyValidator implements Validator {
-            @Override
-            public void validate(Object value, FieldMetadata field) throws ValidationException {
-                if (value == null) {
-                    throw new ValidationException("Field '" + field.getFieldName() + "' cannot be null");
-                }
-                if (value instanceof String && ((String) value).isEmpty()) {
-                    throw new ValidationException("Field '" + field.getFieldName() + "' cannot be empty");
-                }
-            }
+// 2. Create the Validator
+public class NotNullOrEmptyValidator implements Validator {
+    @Override
+    public void validate(Object value, FieldMetadata field) throws ValidationException {
+        if (value == null) {
+            throw new ValidationException("Field '" + field.getFieldName() + "' cannot be null");
         }
+        if (value instanceof String && ((String) value).isEmpty()) {
+            throw new ValidationException("Field '" + field.getFieldName() + "' cannot be empty");
+        }
+    }
+}
 
 // 3. Register it
 registries.
 
-        validators().
+validators().
 
-        register(NotNullOrEmpty .class, new NotNullOrEmptyValidator());
+register(NotNullOrEmpty .class, new NotNullOrEmptyValidator());
 
-        // 4. Use it
-        @NotNullOrEmpty
-        @Column("username")
-        private String username;
+// 4. Use it
+@NotNullOrEmpty
+@Column("username")
+private String username;
 ```
 
 ### 4. Dialect and SQLGenerator
@@ -426,11 +430,11 @@ public class PostgresSQLGenerator extends DefaultSQLGenerator {
 // 2. Register it
 registries.
 
-        sqlGenerators().
+sqlGenerators().
 
-        register(new Dialect("POSTGRESQL"), new
+register(new Dialect("POSTGRESQL"), new
 
-        PostgresSQLGenerator());
+PostgresSQLGenerator());
 ```
 
 ### 5. Meta-Annotations (Composition)
