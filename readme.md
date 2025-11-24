@@ -39,6 +39,8 @@ JDBI for everything else.
     - **Handlers**: Create custom type converters (e.g., Java Enum <-> String, JSON <-> Map).
     - **Validators**: Hook into insert/update operations to validate data.
     - **ValueGenerators**: Automatically generate values on insert/update (e.g., UUIDs, timestamps).
+    - ** Native JDBI Integration: Transparently supports Jdbi plugins. If Jdbi can map it (JSON, UUID, Arrays, Vavr),
+      KuruBind can map it.
     - **Dialects & SQLGenerators**: Customize the generated SQL for specific databases.
     - **Meta-Annotations**: Compose annotations to create simple, reusable annotations for your entities (e.g., create a
       `@CreatedAt` annotation that bundles `@Generated`).
@@ -46,7 +48,8 @@ JDBI for everything else.
 
 ## Getting Started: Configuration
 
-The main entry point is `KurubindDatabase`. You configure it using a builder, providing it with a JDBI instance.
+The main entry point is KurubindDatabase. You can configure it manually or use the KurubindFactory helper for a quick
+start with recommended plugins enabled.
 
 ```java
 import org.jdbi.v3.core.Jdbi;
@@ -54,16 +57,25 @@ import com.roelias.kurubind.KurubindDatabase;
 import com.roelias.kurubind.core.Dialect;
 
 // 1. Create and configure your Jdbi instance (e.g., with a DataSource)
-Jdbi jdbi = Jdbi.create("jdbc:postgresql://localhost:5432/mydb", "user", "pass");
+Jdbi jdbi=Jdbi.create("jdbc:postgresql://localhost:5432/mydb","user","pass");
 
         // 2. Build your KurubindDatabase instance
-        KurubindDatabase db = KurubindDatabase.builder()
-                .withJdbi(jdbi)
-                .withDialect(new Dialect("POSTGRESQL")) // Optional, defaults to ANSI
-                // .installModule(new MyCustomModule()) // Optional: Add your extensions
-                .build();
+        KurubindDatabase db=KurubindDatabase.builder()
+        .withJdbi(jdbi)
+        .withDialect(new Dialect("POSTGRESQL")) // Optional, defaults to ANSI
+        // .installModule(new MyCustomModule()) // Optional: Add your extensions
+        .build();
 
 // 3. You are ready to go!
+
+import com.roelias.kurubind.factory.KurubindFactory;
+import com.roelias.kurubind.KurubindDatabase;
+
+// For PostgreSQL: Automatically enables JSON, UUID, Arrays, and Guava support
+KurubindDatabase db = KurubindFactory.createPostgres("jdbc:postgresql://localhost:5432/mydb", "user", "pass");
+
+// For Generic DBs (MySQL, H2): Enables Jackson support for JSON mapping
+// KurubindDatabase db = KurubindFactory.createGeneric("jdbc:h2:mem:test");
 ```
 
 ## Defining Entities

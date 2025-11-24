@@ -25,6 +25,29 @@
             <artifactId>jdbi3-core</artifactId>
             <version>${jdbi.version}</version>
         </dependency>
+        <!-- 1. JSON Support (Jackson) -->
+        <!-- Enables mapping JSON columns directly to Java Objects -->
+        <dependency>
+            <groupId>org.jdbi</groupId>
+            <artifactId>jdbi3-jackson2</artifactId>
+            <version>${jdbi.version}</version>
+        </dependency>
+
+        <!-- 2. PostgreSQL Support -->
+        <!-- Enables UUID, InetAddress, Arrays, HStore -->
+        <dependency>
+            <groupId>org.jdbi</groupId>
+            <artifactId>jdbi3-postgres</artifactId>
+            <version>${jdbi.version}</version>
+        </dependency>
+
+        <!-- 3. Immutable Collections (Guava) -->
+        <!-- Enables ImmutableList, Multimap, etc. -->
+        <dependency>
+            <groupId>org.jdbi</groupId>
+            <artifactId>jdbi3-guava</artifactId>
+            <version>${jdbi.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
