@@ -6,6 +6,7 @@ import com.roelias.kurubind.annotations.Transient;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 import java.util.*;
 
 public class FieldMetadata {
@@ -93,6 +94,10 @@ public class FieldMetadata {
 
     public Class<?> getFieldType() {
         return field.getType();
+    }
+
+    public Type getGenericType() {
+        return field.getGenericType();
     }
 
     public Collection<Annotation> getAllAnnotations() {
