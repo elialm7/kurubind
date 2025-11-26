@@ -2,7 +2,7 @@
 
 [![Java](https://img.shields.io/badge/Java-17%2B-blue.svg)](https://www.oracle.com/java/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](LICENSE)
-[![Thread-Safe](https://img.shields.io/badge/Thread--Safe-100%25-green.svg)]()
+![Status](https://img.shields.io/badge/Status-Beta-blue.svg)
 
 **KuruBind** is a lightweight, annotation-driven database library for Java that sits in the "sweet spot" between the
 complexity of a full-blown ORM (like Hibernate/JPA) and the manual effort of raw SQL (like plain JDBI or JDBC).
@@ -48,6 +48,8 @@ KuruBind is for you if:
 
 Add KuruBind to your project. You also need to include the Jdbi extensions you plan to use (see **JDBI Ecosystem Support
 ** below for details).
+**In order to use it, you must clone the repository and install it to your local Maven repository
+through maven install command as it is not yet published to a public Maven repository.**
 
 ```xml
 
@@ -56,14 +58,14 @@ Add KuruBind to your project. You also need to include the Jdbi extensions you p
     <dependency>
         <groupId>com.roelias</groupId>
         <artifactId>kurubind</artifactId>
-        <version>1.0.0</version>
+        <version>x.x.x</version>
     </dependency>
 
     <!-- Jdbi Core (Required) -->
     <dependency>
         <groupId>org.jdbi</groupId>
         <artifactId>jdbi3-core</artifactId>
-        <version>3.45.0</version> <!-- Use latest version -->
+        <version>3.49.0</version>
     </dependency>
 </dependencies>
 ```
@@ -114,7 +116,7 @@ Build the instance manually for fine-grained control over the Jdbi instance and 
 ```java
 import org.jdbi.v3.core.Jdbi;
 import com.roelias.kurubind.KurubindDatabase;
-import com.roelias.kurubind.core.Dialect;
+import com.roelias.kurubind.base.Dialect;
 
 Jdbi jdbi = Jdbi.create(dataSource);
 // jdbi.installPlugin(new PostgresPlugin()); // Manual plugin installation
@@ -324,8 +326,8 @@ If native Jdbi support isn't enough, you can create custom extensions by packagi
 A module allows you to bundle custom Handlers, Validators, and Generators together.
 
 ```java
-import com.roelias.kurubind.core.KurubindModule;
-import com.roelias.kurubind.core.RegistryCollector;
+import com.roelias.kurubind.base.KurubindModule;
+import com.roelias.kurubind.base.RegistryCollector;
 
 public class MyCustomModule implements KurubindModule {
     @Override
@@ -426,11 +428,11 @@ public class PostgresSQLGenerator extends DefaultSQLGenerator {
 // 2. Register it in your module (see above)
 registries.
 
-        sqlGenerators().
+sqlGenerators().
 
-        register(new Dialect("POSTGRESQL"), new
+register(new Dialect("POSTGRESQL"), new
 
-        PostgresSQLGenerator());
+PostgresSQLGenerator());
 ```
 
 ### Meta-Annotations (Composition)

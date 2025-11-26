@@ -1,6 +1,6 @@
 package com.roelias.kurubind.registry;
 
-import com.roelias.kurubind.core.ValueGenerator;
+import com.roelias.kurubind.base.ValueGenerator;
 
 import java.util.HashMap;
 import java.util.Map;

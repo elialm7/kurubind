@@ -1,8 +1,8 @@
-package com.roelias.kurubind.ootb;
+package com.roelias.kurubind.factory;
 
 import com.roelias.kurubind.KurubindDatabase;
-import com.roelias.kurubind.core.Dialect;
-import com.roelias.kurubind.core.JdbiProvider;
+import com.roelias.kurubind.base.Dialect;
+import com.roelias.kurubind.base.JdbiProvider;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.guava.GuavaPlugin;
 import org.jdbi.v3.jackson2.Jackson2Plugin;

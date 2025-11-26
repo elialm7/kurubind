@@ -1,6 +1,6 @@
 package com.roelias.kurubind.ootb;
 
-import com.roelias.kurubind.core.SQLGenerator;
+import com.roelias.kurubind.base.SQLGenerator;
 import com.roelias.kurubind.metadata.EntityMetadata;
 import com.roelias.kurubind.metadata.FieldMetadata;
 

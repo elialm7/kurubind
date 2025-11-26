@@ -1,7 +1,7 @@
 package com.roelias.kurubind.mapper;
 
-import com.roelias.kurubind.core.Dialect;
-import com.roelias.kurubind.core.Handler;
+import com.roelias.kurubind.base.Dialect;
+import com.roelias.kurubind.base.Handler;
 import com.roelias.kurubind.metadata.EntityMetadata;
 import com.roelias.kurubind.metadata.FieldMetadata;
 import com.roelias.kurubind.registry.HandlerRegistry;

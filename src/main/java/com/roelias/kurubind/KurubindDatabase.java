@@ -2,7 +2,7 @@ package com.roelias.kurubind;
 
 import com.roelias.kurubind.annotations.DefaultValue;
 import com.roelias.kurubind.annotations.Generated;
-import com.roelias.kurubind.core.*;
+import com.roelias.kurubind.base.*;
 import com.roelias.kurubind.exceptions.ValidationError;
 import com.roelias.kurubind.exceptions.ValidationException;
 import com.roelias.kurubind.mapper.KurubindRowMapper;

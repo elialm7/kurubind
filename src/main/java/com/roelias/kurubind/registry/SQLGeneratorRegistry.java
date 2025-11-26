@@ -1,7 +1,7 @@
 package com.roelias.kurubind.registry;
 
-import com.roelias.kurubind.core.Dialect;
-import com.roelias.kurubind.core.SQLGenerator;
+import com.roelias.kurubind.base.Dialect;
+import com.roelias.kurubind.base.SQLGenerator;
 import com.roelias.kurubind.ootb.DefaultSQLGenerator;
 
 import java.util.HashMap;

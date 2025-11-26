@@ -1,4 +1,4 @@
-package com.roelias.kurubind.core;
+package com.roelias.kurubind.base;
 
 import org.jdbi.v3.core.Jdbi;
 

@@ -1,4 +1,4 @@
-package com.roelias.kurubind.core;
+package com.roelias.kurubind.base;
 
 @FunctionalInterface
 public interface KurubindModule {

@@ -1,11 +1,14 @@
 package com.roelias.kurubind.registry;
 
-import com.roelias.kurubind.core.Dialect;
-import com.roelias.kurubind.core.Handler;
+import com.roelias.kurubind.base.Dialect;
+import com.roelias.kurubind.base.Handler;
 import com.roelias.kurubind.metadata.FieldMetadata;
 
 import java.lang.annotation.Annotation;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class HandlerRegistry {

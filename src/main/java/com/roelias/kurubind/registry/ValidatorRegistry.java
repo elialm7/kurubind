@@ -1,6 +1,6 @@
 package com.roelias.kurubind.registry;
 
-import com.roelias.kurubind.core.Validator;
+import com.roelias.kurubind.base.Validator;
 import com.roelias.kurubind.metadata.FieldMetadata;
 
 import java.lang.annotation.Annotation;
@@ -15,6 +15,7 @@ public class ValidatorRegistry {
     public ValidatorRegistry() {
         this.validators = new HashMap<>();
     }
+
     public void register(Class<? extends Annotation> annotationType, Validator validator) {
         validators.put(annotationType, validator);
     }

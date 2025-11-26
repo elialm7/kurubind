@@ -1,4 +1,4 @@
-package com.roelias.kurubind.core;
+package com.roelias.kurubind.base;
 
 public class Dialect {
     private final String name;

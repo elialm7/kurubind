@@ -1,4 +1,4 @@
-package com.roelias.kurubind.core;
+package com.roelias.kurubind.base;
 
 import com.roelias.kurubind.registry.HandlerRegistry;
 import com.roelias.kurubind.registry.SQLGeneratorRegistry;
