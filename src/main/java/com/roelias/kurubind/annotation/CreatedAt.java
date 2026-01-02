@@ -3,10 +3,11 @@ package com.roelias.kurubind.annotation;
 import java.lang.annotation.*;
 
 /**
- * Marks a field as non-persistent (ignored in all database operations).
+ * Meta-annotation: Automatically set timestamp on INSERT.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
+@Generated(value = "timestamp")
 @Documented
-public @interface Transient {
+public @interface CreatedAt {
 }
