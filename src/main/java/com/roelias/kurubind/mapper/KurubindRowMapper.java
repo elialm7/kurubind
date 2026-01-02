@@ -30,41 +30,6 @@ public class KurubindRowMapper<T> implements RowMapper<T> {
         this.dialect = dialect;
     }
 
-   /* public T map(ResultSet rs, StatementContext ctx) throws SQLException {
-        T entity = (T) metadata.createInstance();
-        if(columnsInResultSet == null){
-            columnsInResultSet = new HashSet<>();
-            ResultSetMetaData rsmd = rs.getMetaData();
-            int columnCount = rsmd.getColumnCount();
-            for (int i = 1; i <= columnCount; i++) {
-                columnsInResultSet.add(rsmd.getColumnLabel(i).toLowerCase());
-            }
-        }
-        for(FieldMetadata field : metadata.getFields()){
-            String columnName = field.getColumnName();
-            if(columnsInResultSet.contains(columnName.toLowerCase())){
-                Object value = rs.getObject(columnName);
-                if(value != null){
-                    List<Handler> handler = handlerRegistry.getHandlersForField(field, dialect);
-                    for(Handler h : handler){
-                        value = h.handleRead(value, field);
-                    }
-                }
-                try {
-                    field.setValue(entity, value);
-                }catch (IllegalArgumentException e){
-                    throw new SQLException(
-                      "Mapping Error for field '"+    field.getFieldName()+
-                              "' of type '"+ field.getFieldType().getName() +
-                              "' with value '"+ value +
-                              "' of type '"+ (value != null ? value.getClass().getName() : "null") + "'", e
-                    );
-                }
-            }
-        }
-        return entity;
-    }*/
-
     @Override
     @SuppressWarnings("unchecked")
     public T map(ResultSet rs, StatementContext ctx) throws SQLException {
