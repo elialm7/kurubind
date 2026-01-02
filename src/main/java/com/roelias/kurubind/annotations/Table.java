@@ -1,13 +1,21 @@
 package com.roelias.kurubind.annotations;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
+/**
+ * Specifies the database table name and schema for the annotated class.
+ */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
+@Documented
 public @interface Table {
-    String name();
+    /**
+     * Table name. Defaults to snake_case of class name.
+     */
+    String value() default "";
+
+    /**
+     * Optional schema name.
+     */
     String schema() default "";
 }
