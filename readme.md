@@ -83,8 +83,8 @@ Use `KurubindFactory` to create a pre-configured instance. This automatically in
 Jackson for JSON or Postgres types) if they are on your classpath.
 
 ```java
-import com.roelias.kurubind.factory.KurubindFactory;
-import com.roelias.kurubind.KurubindDatabase;
+import com.roelias.legacy.factory.KurubindFactory;
+import com.roelias.legacy.KurubindDatabase;
 
 // For PostgreSQL: Automatically enables JSON, UUID, Arrays, and Guava support
 KurubindDatabase db = KurubindFactory.createPostgres(
@@ -115,8 +115,8 @@ Build the instance manually for fine-grained control over the Jdbi instance and 
 
 ```java
 import org.jdbi.v3.core.Jdbi;
-import com.roelias.kurubind.KurubindDatabase;
-import com.roelias.kurubind.base.Dialect;
+import com.roelias.legacy.KurubindDatabase;
+import com.roelias.legacy.base.Dialect;
 
 Jdbi jdbi = Jdbi.create(dataSource);
 // jdbi.installPlugin(new PostgresPlugin()); // Manual plugin installation
@@ -145,7 +145,7 @@ Define entities as simple POJOs. KuruBind supports complex types natively if the
 ### Example Entity
 
 ```java
-import com.roelias.kurubind.annotations.*;
+import com.roelias.legacy.annotations.*;
 
 import java.time.Instant;
 import java.util.Map;
@@ -189,7 +189,7 @@ public class User {
 The `KuruRepository` provides a typed API for common operations.
 
 ```java
-import com.roelias.kurubind.repository.KuruRepository;
+import com.roelias.legacy.repository.KuruRepository;
 
 KuruRepository<User> userRepo = new KuruRepository<>(db, User.class);
 
@@ -326,8 +326,8 @@ If native Jdbi support isn't enough, you can create custom extensions by packagi
 A module allows you to bundle custom Handlers, Validators, and Generators together.
 
 ```java
-import com.roelias.kurubind.base.KurubindModule;
-import com.roelias.kurubind.base.RegistryCollector;
+import com.roelias.legacy.base.KurubindModule;
+import com.roelias.legacy.base.RegistryCollector;
 
 public class MyCustomModule implements KurubindModule {
     @Override
@@ -409,7 +409,7 @@ public class NotNullValidator implements Validator {
 If KuruBind's default SQL generation doesn't match your database syntax, you can override it.
 
 ```java
-import com.roelias.kurubind.ootb.DefaultSQLGenerator;
+import com.roelias.legacy.ootb.DefaultSQLGenerator;
 
 // 1. Create a custom SQL Generator
 
