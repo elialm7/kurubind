@@ -11,7 +11,7 @@ import java.lang.annotation.*;
 @Documented
 public @interface Table {
     /**
-     * Table name. Defaults to snake_case of class name.
+     * Table name. Defaults to the  class name.
      */
     String value() default "";
 
