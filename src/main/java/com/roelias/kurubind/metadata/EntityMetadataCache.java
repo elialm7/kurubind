@@ -142,7 +142,6 @@ public class EntityMetadataCache {
             Id id = field.getAnnotation(Id.class);
             isGenerated = id.generated();
         }
-
         List<GeneratorConfig> generators = extractGenerators(field);
 
         return new FieldMetadata(
@@ -153,7 +152,8 @@ public class EntityMetadataCache {
                 setter,
                 isId,
                 isGenerated,
-                generators
+                generators,
+                field
         );
 
     }

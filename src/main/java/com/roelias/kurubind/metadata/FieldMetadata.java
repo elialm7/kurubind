@@ -4,6 +4,7 @@ import com.roelias.kurubind.exception.EntityMetadataException;
 import com.roelias.kurubind.generator.GeneratorConfig;
 
 import java.lang.invoke.MethodHandle;
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,7 +16,8 @@ public record FieldMetadata(
         MethodHandle setter,
         boolean isId,
         boolean isGenerated,
-        List<GeneratorConfig> generators
+        List<GeneratorConfig> generators,
+        Field field
 ) {
 
 
