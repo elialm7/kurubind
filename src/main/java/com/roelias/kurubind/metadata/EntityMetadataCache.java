@@ -24,17 +24,17 @@ import java.util.concurrent.ConcurrentHashMap;
 public class EntityMetadataCache {
 
 
-    private static final Map<Class<?>, EntityMetadata> cache = new ConcurrentHashMap<>();
+    private static final Map<Class<?>, EntityMetaData> cache = new ConcurrentHashMap<>();
 
 
     /**
      * Get or build metadata for an entity class.
      */
-    public static EntityMetadata get(Class<?> clazz) {
+    public static EntityMetaData get(Class<?> clazz) {
         return cache.computeIfAbsent(clazz, EntityMetadataCache::build);
     }
 
-    private static EntityMetadata build(Class<?> entityClass) {
+    private static EntityMetaData build(Class<?> entityClass) {
 
         try {
             //extract tbale information
@@ -57,7 +57,7 @@ public class EntityMetadataCache {
                 constructor = entityClass.getDeclaredConstructor();
                 constructor.setAccessible(true);
             }
-            return new EntityMetadata(
+            return new EntityMetaData(
                     entityClass,
                     tableName,
                     schema,

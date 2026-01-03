@@ -5,7 +5,7 @@ import java.lang.reflect.Constructor;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public record EntityMetadata(
+public record EntityMetaData(
 
 
         Class<?> entityClass,
