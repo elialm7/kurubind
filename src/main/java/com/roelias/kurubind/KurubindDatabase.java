@@ -100,8 +100,7 @@ public class KurubindDatabase {
         if (meta.hasGeneratedId()) {
             try {
                 // For PostgreSQL with RETURNING clause
-                if (sqlEngine.getDialect() instanceof com.roelias.kurubind.sql.PostgresDialect ||
-                        sqlEngine.getDialect() instanceof com.roelias.kurubind.sql.H2Dialect) {
+                if (sqlEngine.getDialect() instanceof com.roelias.kurubind.sql.PostgresDialect) {
 
                     Object generatedId = update.executeAndReturnGeneratedKeys()
                             .mapTo(meta.idField().type())

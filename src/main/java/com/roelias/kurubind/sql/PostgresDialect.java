@@ -6,7 +6,6 @@ import com.roelias.kurubind.metadata.FieldMetadata;
 import java.util.StringJoiner;
 
 public class PostgresDialect implements SqlDialect {
-
     @Override
     public String quoteIdentifier(String id) {
         return "\"" + id + "\"";
@@ -88,5 +87,4 @@ public class PostgresDialect implements SqlDialect {
     public String buildPagination(int limit, int offset) {
         return String.format("LIMIT %d OFFSET %d", limit, offset);
     }
-
 }

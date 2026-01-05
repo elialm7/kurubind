@@ -393,18 +393,6 @@ List<User> recent = db.query(
 
 Dialect is auto-detected from JDBC connection metadata.
 
-## Performance
-
-| Metric                 | KuruBind | Plain Jdbi | JPA/Hibernate |
-|------------------------|----------|------------|---------------|
-| Entity mapping (1 row) | 0.05ms   | 0.1ms      | 0.5ms         |
-| Simple SELECT          | 1ms      | 1ms        | 2ms           |
-| Batch INSERT (1000)    | 50ms     | 45ms       | 5000ms        |
-| Memory per entity      | 2KB      | 0KB        | 50KB          |
-| Startup time           | 10ms     | 5ms        | 2000ms        |
-
-**Key**: Nearly identical to plain Jdbi, much faster than ORMs.
-
 ## Best Practices
 
 ### 1. Keep Entities Simple
