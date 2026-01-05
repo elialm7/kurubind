@@ -1,6 +1,6 @@
 package com.roelias.kurubind.sql;
 
-import com.roelias.kurubind.metadata.EntityMetaData;
+import com.roelias.kurubind.metadata.MetaEntity;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -16,7 +16,7 @@ public class SqlEngine {
     /**
      * Get INSERT SQL for an entity (cached).
      */
-    public String getInsertSql(EntityMetaData meta) {
+    public String getInsertSql(MetaEntity meta) {
         return sqlCache.computeIfAbsent(
                 cacheKey("insert", meta),
                 k -> dialect.buildInsert(meta)
@@ -26,7 +26,7 @@ public class SqlEngine {
     /**
      * Get UPDATE SQL for an entity (cached).
      */
-    public String getUpdateSql(EntityMetaData meta) {
+    public String getUpdateSql(MetaEntity meta) {
         return sqlCache.computeIfAbsent(
                 cacheKey("update", meta),
                 k -> dialect.buildUpdate(meta)
@@ -36,7 +36,7 @@ public class SqlEngine {
     /**
      * Get DELETE SQL for an entity (cached).
      */
-    public String getDeleteSql(EntityMetaData meta) {
+    public String getDeleteSql(MetaEntity meta) {
         return sqlCache.computeIfAbsent(
                 cacheKey("delete", meta),
                 k -> dialect.buildDelete(meta)
@@ -46,7 +46,7 @@ public class SqlEngine {
     /**
      * Get SELECT by ID SQL for an entity (cached).
      */
-    public String getSelectByIdSql(EntityMetaData meta) {
+    public String getSelectByIdSql(MetaEntity meta) {
         return sqlCache.computeIfAbsent(
                 cacheKey("selectById", meta),
                 k -> dialect.buildSelectById(meta)
@@ -56,7 +56,7 @@ public class SqlEngine {
     /**
      * Get SELECT all SQL for an entity (cached).
      */
-    public String getSelectAllSql(EntityMetaData meta) {
+    public String getSelectAllSql(MetaEntity meta) {
         return sqlCache.computeIfAbsent(
                 cacheKey("selectAll", meta),
                 k -> dialect.buildSelectAll(meta)
@@ -66,7 +66,7 @@ public class SqlEngine {
     /**
      * Get COUNT SQL for an entity (cached).
      */
-    public String getCountSql(EntityMetaData meta) {
+    public String getCountSql(MetaEntity meta) {
         return sqlCache.computeIfAbsent(
                 cacheKey("count", meta),
                 k -> dialect.buildCount(meta)
@@ -76,7 +76,7 @@ public class SqlEngine {
     /**
      * Get EXISTS by ID SQL for an entity (cached).
      */
-    public String getExistsByIdSql(EntityMetaData meta) {
+    public String getExistsByIdSql(MetaEntity meta) {
         return sqlCache.computeIfAbsent(
                 cacheKey("existsById", meta),
                 k -> dialect.buildExistsById(meta)
@@ -107,7 +107,7 @@ public class SqlEngine {
     /**
      * Generate cache key for SQL statements.
      */
-    private String cacheKey(String operation, EntityMetaData meta) {
+    private String cacheKey(String operation, MetaEntity meta) {
         return operation + ":" + meta.entityClass().getName();
     }
 }

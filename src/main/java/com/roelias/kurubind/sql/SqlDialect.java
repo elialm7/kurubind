@@ -1,7 +1,7 @@
 package com.roelias.kurubind.sql;
 
 
-import com.roelias.kurubind.metadata.EntityMetaData;
+import com.roelias.kurubind.metadata.MetaEntity;
 import org.jdbi.v3.core.Handle;
 
 import java.sql.SQLException;
@@ -20,37 +20,37 @@ public interface SqlDialect {
     /**
      * Build INSERT statement.
      */
-    String buildInsert(EntityMetaData meta);
+    String buildInsert(MetaEntity meta);
 
     /**
      * Build UPDATE statement.
      */
-    String buildUpdate(EntityMetaData meta);
+    String buildUpdate(MetaEntity meta);
 
     /**
      * Build DELETE statement.
      */
-    String buildDelete(EntityMetaData meta);
+    String buildDelete(MetaEntity meta);
 
     /**
      * Build SELECT by ID statement.
      */
-    String buildSelectById(EntityMetaData meta);
+    String buildSelectById(MetaEntity meta);
 
     /**
      * Build SELECT all statement.
      */
-    String buildSelectAll(EntityMetaData meta);
+    String buildSelectAll(MetaEntity meta);
 
     /**
      * Build COUNT statement.
      */
-    String buildCount(EntityMetaData meta);
+    String buildCount(MetaEntity meta);
 
     /**
      * Build EXISTS by ID statement.
      */
-    String buildExistsById(EntityMetaData meta);
+    String buildExistsById(MetaEntity meta);
 
     /**
      * Build pagination clause (LIMIT/OFFSET).

@@ -2,9 +2,9 @@ package com.roelias.kurubind.mapper;
 
 import com.roelias.kurubind.annotation.Kurubind;
 import com.roelias.kurubind.exception.MappingException;
-import com.roelias.kurubind.metadata.EntityMetaData;
 import com.roelias.kurubind.metadata.EntityMetadataCache;
 import com.roelias.kurubind.metadata.FieldMetadata;
+import com.roelias.kurubind.metadata.MetaEntity;
 import org.jdbi.v3.core.config.ConfigRegistry;
 import org.jdbi.v3.core.mapper.ColumnMapper;
 import org.jdbi.v3.core.mapper.RowMapper;
@@ -21,7 +21,7 @@ import java.util.Optional;
  * Integrates with Jdbi's ColumnMapper system for plugin support.
  */
 public class KurubindRowMapper<T> implements RowMapper<T> {
-    private final EntityMetaData metadata;
+    private final MetaEntity metadata;
 
 
     public KurubindRowMapper(Class<T> entity) {

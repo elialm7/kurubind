@@ -4,9 +4,9 @@ import com.roelias.kurubind.common.PageResult;
 import com.roelias.kurubind.exception.InvalidEntityException;
 import com.roelias.kurubind.exception.KurubindException;
 import com.roelias.kurubind.generator.GeneratorRegistry;
-import com.roelias.kurubind.metadata.EntityMetaData;
 import com.roelias.kurubind.metadata.EntityMetadataCache;
 import com.roelias.kurubind.metadata.FieldMetadata;
+import com.roelias.kurubind.metadata.MetaEntity;
 import com.roelias.kurubind.sql.SqlDialect;
 import com.roelias.kurubind.sql.SqlEngine;
 import org.jdbi.v3.core.Handle;
@@ -52,7 +52,7 @@ public class KurubindDatabase {
             throw new IllegalArgumentException("Entity cannot be null");
         }
 
-        EntityMetaData meta = EntityMetadataCache.get(entity.getClass());
+        MetaEntity meta = EntityMetadataCache.get(entity.getClass());
 
         if (!meta.hasId()) {
             throw new InvalidEntityException(
@@ -82,7 +82,7 @@ public class KurubindDatabase {
             throw new IllegalArgumentException("Entity cannot be null");
         }
 
-        EntityMetaData meta = EntityMetadataCache.get(entity.getClass());
+        MetaEntity meta = EntityMetadataCache.get(entity.getClass());
 
         // Apply INSERT generators
         applyInsertGenerators(entity, meta);
@@ -140,7 +140,7 @@ public class KurubindDatabase {
             throw new IllegalArgumentException("Entity cannot be null");
         }
 
-        EntityMetaData meta = EntityMetadataCache.get(entity.getClass());
+        MetaEntity meta = EntityMetadataCache.get(entity.getClass());
 
         if (!meta.hasId()) {
             throw new InvalidEntityException(
@@ -186,7 +186,7 @@ public class KurubindDatabase {
             throw new IllegalArgumentException("Entity cannot be null");
         }
 
-        EntityMetaData meta = EntityMetadataCache.get(entity.getClass());
+        MetaEntity meta = EntityMetadataCache.get(entity.getClass());
 
         if (!meta.hasId()) {
             throw new InvalidEntityException(
@@ -210,7 +210,7 @@ public class KurubindDatabase {
             throw new IllegalArgumentException("ID cannot be null");
         }
 
-        EntityMetaData meta = EntityMetadataCache.get(entityClass);
+        MetaEntity meta = EntityMetadataCache.get(entityClass);
 
         if (!meta.hasId()) {
             throw new InvalidEntityException(
@@ -238,7 +238,7 @@ public class KurubindDatabase {
             return Optional.empty();
         }
 
-        EntityMetaData meta = EntityMetadataCache.get(entityClass);
+        MetaEntity meta = EntityMetadataCache.get(entityClass);
 
         if (!meta.hasId()) {
             throw new InvalidEntityException(
@@ -261,7 +261,7 @@ public class KurubindDatabase {
             return false;
         }
 
-        EntityMetaData meta = EntityMetadataCache.get(entityClass);
+        MetaEntity meta = EntityMetadataCache.get(entityClass);
 
         if (!meta.hasId()) {
             throw new InvalidEntityException(
@@ -280,7 +280,7 @@ public class KurubindDatabase {
      * Find all entities of a type.
      */
     public <T> List<T> findAll(Class<T> entityClass) {
-        EntityMetaData meta = EntityMetadataCache.get(entityClass);
+        MetaEntity meta = EntityMetadataCache.get(entityClass);
         String sql = sqlEngine.getSelectAllSql(meta);
         return handle.createQuery(sql)
                 .mapTo(entityClass)
@@ -291,7 +291,7 @@ public class KurubindDatabase {
      * Find first entity of a type.
      */
     public <T> Optional<T> findFirst(Class<T> entityClass) {
-        EntityMetaData meta = EntityMetadataCache.get(entityClass);
+        MetaEntity meta = EntityMetadataCache.get(entityClass);
         String sql = sqlEngine.getSelectAllSql(meta) + " " +
                 sqlEngine.buildPagination(1, 0);
         return handle.createQuery(sql)
@@ -303,7 +303,7 @@ public class KurubindDatabase {
      * Count all entities of a type.
      */
     public <T> long count(Class<T> entityClass) {
-        EntityMetaData meta = EntityMetadataCache.get(entityClass);
+        MetaEntity meta = EntityMetadataCache.get(entityClass);
         String sql = sqlEngine.getCountSql(meta);
         return handle.createQuery(sql)
                 .mapTo(Long.class)
@@ -347,7 +347,7 @@ public class KurubindDatabase {
             throw new IllegalArgumentException("Size must be > 0");
         }
 
-        EntityMetaData meta = EntityMetadataCache.get(entityClass);
+        MetaEntity meta = EntityMetadataCache.get(entityClass);
 
         // Get total count
         long total = count(entityClass);
@@ -441,7 +441,7 @@ public class KurubindDatabase {
     /**
      * Apply generators for INSERT operation.
      */
-    private <T> void applyInsertGenerators(T entity, EntityMetaData meta) {
+    private <T> void applyInsertGenerators(T entity, MetaEntity meta) {
         for (FieldMetadata field : meta.fields()) {
             if (field.hasGenerators() && !field.getGeneratorsForInsert().isEmpty()) {
                 GeneratorRegistry.applyInsertGenerators(entity, field, handle);
@@ -452,7 +452,7 @@ public class KurubindDatabase {
     /**
      * Apply generators for UPDATE operation.
      */
-    private <T> void applyUpdateGenerators(T entity, EntityMetaData meta) {
+    private <T> void applyUpdateGenerators(T entity, MetaEntity meta) {
         for (FieldMetadata field : meta.fields()) {
             if (field.hasGenerators() && !field.getGeneratorsForUpdate().isEmpty()) {
                 GeneratorRegistry.applyUpdateGenerators(entity, field, handle);

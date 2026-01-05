@@ -1,7 +1,7 @@
 package com.roelias.kurubind.sql;
 
-import com.roelias.kurubind.metadata.EntityMetaData;
 import com.roelias.kurubind.metadata.FieldMetadata;
+import com.roelias.kurubind.metadata.MetaEntity;
 
 import java.util.StringJoiner;
 
@@ -16,7 +16,7 @@ public class GenericDialect implements SqlDialect {
     }
 
     @Override
-    public String buildInsert(EntityMetaData meta) {
+    public String buildInsert(MetaEntity meta) {
         StringBuilder sql = new StringBuilder("INSERT INTO ");
         sql.append(quoteIdentifier(meta.tableName()));
         sql.append(" (");
@@ -34,7 +34,7 @@ public class GenericDialect implements SqlDialect {
     }
 
     @Override
-    public String buildUpdate(EntityMetaData meta) {
+    public String buildUpdate(MetaEntity meta) {
         StringBuilder sql = new StringBuilder("UPDATE ");
         sql.append(quoteIdentifier(meta.tableName()));
         sql.append(" SET ");
@@ -52,31 +52,31 @@ public class GenericDialect implements SqlDialect {
     }
 
     @Override
-    public String buildDelete(EntityMetaData meta) {
+    public String buildDelete(MetaEntity meta) {
         return "DELETE FROM " + quoteIdentifier(meta.tableName()) +
                 " WHERE " + quoteIdentifier(meta.idField().columnName()) +
                 " = :" + meta.idField().fieldName();
     }
 
     @Override
-    public String buildSelectById(EntityMetaData meta) {
+    public String buildSelectById(MetaEntity meta) {
         return "SELECT * FROM " + quoteIdentifier(meta.tableName()) +
                 " WHERE " + quoteIdentifier(meta.idField().columnName()) +
                 " = :" + meta.idField().fieldName();
     }
 
     @Override
-    public String buildSelectAll(EntityMetaData meta) {
+    public String buildSelectAll(MetaEntity meta) {
         return "SELECT * FROM " + quoteIdentifier(meta.tableName());
     }
 
     @Override
-    public String buildCount(EntityMetaData meta) {
+    public String buildCount(MetaEntity meta) {
         return "SELECT COUNT(*) FROM " + quoteIdentifier(meta.tableName());
     }
 
     @Override
-    public String buildExistsById(EntityMetaData meta) {
+    public String buildExistsById(MetaEntity meta) {
         // Standard ANSI SQL approach using CASE with subquery
         return "SELECT CASE WHEN (SELECT COUNT(*) FROM " + quoteIdentifier(meta.tableName()) +
                 " WHERE " + quoteIdentifier(meta.idField().columnName()) +
