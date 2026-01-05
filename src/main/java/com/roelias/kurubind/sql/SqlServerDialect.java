@@ -10,8 +10,8 @@ import java.util.StringJoiner;
  */
 public class SqlServerDialect implements SqlDialect {
     @Override
-    public String quoteIdentifier(String identifier) {
-        return "[" + identifier + "]";
+    public String quoteIdentifier(String id) {
+        return "[" + id + "]";
     }
 
     @Override

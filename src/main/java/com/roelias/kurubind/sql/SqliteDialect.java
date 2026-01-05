@@ -10,8 +10,8 @@ import java.util.StringJoiner;
  */
 public class SqliteDialect implements SqlDialect {
     @Override
-    public String quoteIdentifier(String identifier) {
-        return "\"" + identifier + "\"";
+    public String quoteIdentifier(String id) {
+        return "\"" + id + "\"";
     }
 
     @Override
@@ -76,10 +76,11 @@ public class SqliteDialect implements SqlDialect {
 
     @Override
     public String buildExistsById(EntityMetaData meta) {
-        return "SELECT EXISTS(SELECT 1 FROM " + quoteIdentifier(meta.tableName()) +
+        // SQLite doesn't have native EXISTS that returns boolean, use COUNT
+        return "SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END FROM " +
+                quoteIdentifier(meta.tableName()) +
                 " WHERE " + quoteIdentifier(meta.idField().columnName()) +
-                " = :" + meta.idField().fieldName() + ")";
-
+                " = :" + meta.idField().fieldName();
     }
 
     @Override
