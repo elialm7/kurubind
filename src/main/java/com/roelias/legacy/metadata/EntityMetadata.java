@@ -27,7 +27,7 @@ public class EntityMetadata {
             if (tableAnnotation == null) {
                 throw new IllegalArgumentException("Class " + entityClass.getName() + " must be annotated with @Table or @QueryResponse");
             }
-            this.tableName = tableAnnotation.name();
+            this.tableName = tableAnnotation.value();
             this.schema = tableAnnotation.schema();
         } else {
             this.tableName = null;
