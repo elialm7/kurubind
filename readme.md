@@ -43,7 +43,7 @@ This separation keeps KuruBind simple, fast, and maintainable.
     <dependency>
         <groupId>com.kurubind</groupId>
         <artifactId>kurubind</artifactId>
-        <version>2.0.0</version>
+        <version>1.0.0</version>
     </dependency>
 </dependencies>
 ```
