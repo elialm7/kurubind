@@ -7,7 +7,7 @@
 
     <groupId>com.roelias</groupId>
     <artifactId>kurubind</artifactId>
-    <version>1.0.1</version>
+    <version>1.1.0</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>17</maven.compiler.source>
